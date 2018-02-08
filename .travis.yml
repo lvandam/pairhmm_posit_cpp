@@ -1,0 +1,15 @@
+language: cpp
+compiler: gcc
+
+os: osx
+
+before_script:
+    - brew install boost --c++11 --without-single --without-static
+    - mkdir build
+    - cd build
+    - cmake ..
+
+script: make
+
+notifications:
+    email: false
