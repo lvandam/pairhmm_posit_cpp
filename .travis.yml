@@ -1,0 +1,14 @@
+language: cpp
+compiler: gcc
+
+os: osx
+
+before_script:
+    - mkdir build
+    - cd build
+    - cmake ..
+
+script: make
+
+notifications:
+    email: false
