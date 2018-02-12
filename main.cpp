@@ -19,17 +19,22 @@ int main(int argc, char *argv[]) {
 
     std::vector<Testcase> testcases = reader.from_file(argv[1]);
 
-    // Perform calculation per testcase
+    // Perform calculation per testcase (for double and posit)
     std::vector<double> results_double;
     std::vector<double> results_posit;
     for(Testcase testcase : testcases)
     {
+        cout << "FLOAT" << endl;
         results_double.push_back(pairhmm_float.compute_full_prob(&testcase));
+        cout << endl << "POSIT" << endl;
         results_posit.push_back(pairhmm_posit.compute_full_prob(&testcase));
     }
 
+    cout << endl;
     for(int i = 0; i < testcases.size(); i++) {
-        cout << "Read #" << i << " -- Result double = " << setprecision(20) << log10(results_double[i]) << ", result posit = " << log10(results_posit[i]) << endl;
+        cout << "Read #" << i << ":" << endl;
+        cout << "-- Result double = " << fixed << setprecision(30) << results_double[i] << " -- log10 = " << log10(results_double[i]) << endl;
+        cout << "-- Result posit  = " << fixed << setprecision(30) << results_posit[i] << " -- log10 = " << log10(results_posit[i]) << endl;
     }
 
     return 0;

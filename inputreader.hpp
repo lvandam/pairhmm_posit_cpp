@@ -48,19 +48,19 @@ public:
             try {
                 // Base qualities
                 for (int j = 0; j < testcase.read_size; j++)
-                    testcase.base_quals[j] = (char) stoi(tokens[token_idx++]);
+                    testcase.base_quals[j] = (char)stoi(tokens[token_idx++]);
 
                 // Insertion qualities
                 for (int j = 0; j < testcase.read_size; j++)
-                    testcase.ins_quals[j] = (char) stoi(tokens[token_idx++]);
+                    testcase.ins_quals[j] = (char)stoi(tokens[token_idx++]);
 
                 // Deletion qualities
                 for (int j = 0; j < testcase.read_size; j++)
-                    testcase.del_quals[j] = (char) stoi(tokens[token_idx++]);
+                    testcase.del_quals[j] = (char)stoi(tokens[token_idx++]);
 
                 // Gap continuity qualities
                 for (int j = 0; j < testcase.read_size; j++)
-                    testcase.gcp_quals[j] = (char) stoi(tokens[token_idx++]);
+                    testcase.gcp_quals[j] = (char)stoi(tokens[token_idx++]);
             } catch(...) {
                 throw std::runtime_error("Invalid input reads file");
             }
