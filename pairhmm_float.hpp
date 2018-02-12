@@ -15,15 +15,15 @@ private:
     }
 
 public:
-    double compute_full_prob(Testcase *testcase) {
+    float compute_full_prob(Testcase *testcase) {
         int r, c;
         int ROWS = testcase->read_size;
         int COLS = testcase->haplotype_size;
 
-        double M[350][350];
-        double X[350][350];
-        double Y[350][350];
-        double p[350][6];
+        float M[350][350];
+        float X[350][350];
+        float Y[350][350];
+        float p[350][6];
 
         int MM = 0, GapM = 1, MX = 2, XX = 3, MY = 4, YY = 5;
 
@@ -95,7 +95,7 @@ public:
             }
         }
 
-        double result = 0;
+        float result = 0;
         for (c = 1; c <= COLS; c++) {
             result += M[ROWS][c] + X[ROWS][c];
         }

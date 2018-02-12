@@ -9,6 +9,9 @@
 #include <posit>
 #include "testcase.hpp"
 
+#define NBITS 32
+#define ES 4
+
 using namespace std;
 using namespace sw::unum;
 
@@ -16,28 +19,28 @@ class PairHMMPosit {
 private:
     static constexpr size_t quire_capacity = 6;
 
-    static posit<32,2> score_to_probability(int i) {
+    static posit<NBITS, ES> score_to_probability(int i) {
         return powf(10.f, -((float) i) / 10.f);
     }
 
 public:
-    double compute_full_prob(Testcase *testcase) {
+    float compute_full_prob(Testcase *testcase) {
         int r, c;
         int ROWS = testcase->read_size;
         int COLS = testcase->haplotype_size;
 
-        std::vector<std::vector<posit<32, 2>>> M;
-        std::vector<std::vector<posit<32, 2>>> X;
-        std::vector<std::vector<posit<32, 2>>> Y;
-        std::vector<std::vector<posit<32, 2>>> p;
+        std::vector<std::vector<posit<NBITS, ES>>> M;
+        std::vector<std::vector<posit<NBITS, ES>>> X;
+        std::vector<std::vector<posit<NBITS, ES>>> Y;
+        std::vector<std::vector<posit<NBITS, ES>>> p;
 
         // Initialize matrices
         for (int i = 0; i < 350; i++) {
-            std::vector<posit<32, 2>> row_m_x_y(350);
+            std::vector<posit<NBITS, ES>> row_m_x_y(350);
             M.push_back(row_m_x_y);
             X.push_back(row_m_x_y);
             Y.push_back(row_m_x_y);
-            std::vector<posit<32, 2>> row_p(6);
+            std::vector<posit<NBITS, ES>> row_p(6);
             p.push_back(row_p);
         }
 
@@ -93,7 +96,7 @@ public:
                 char _hap = testcase->haplotype_base[c - 1];
                 int score_base = testcase->base_quals[r - 1] & 127;
 
-                posit<32,2> distm = score_to_probability(score_base);
+                posit<NBITS, ES> distm = score_to_probability(score_base);
                 cout << "["<<r<<"]["<<c<<"] score_base="<<score_base<<" -- distm=" << fixed << setprecision(30) << distm << endl;
 
                 if (_rs == _hap || _rs == 'N' || _hap == 'N') {
@@ -114,13 +117,13 @@ public:
         }
 
         // Accumulator
-        quire<32, 2, quire_capacity> result;
+        quire<NBITS, ES, quire_capacity> result;
         for (c = 1; c <= COLS; c++) {
             result += (M[ROWS][c] + X[ROWS][c]).convert_to_scientific_notation();
         }
 
-        // Convert back to 64-bit double
-        return double(result.to_value());
+        // Convert back to float
+        return float(result.to_value());
     }
 };
 
