@@ -5,37 +5,22 @@
 #ifndef PAIRHMM_SIMPLE_UTILS_HPP
 #define PAIRHMM_SIMPLE_UTILS_HPP
 
-#define PRECISION 40
-
 #include <iostream>
 #include <iomanip>
+#include "config.hpp"
 
 using namespace std;
 
 void printDebug(const char* format, ...) {
-#ifdef PRINTVALUES
+#ifdef DEBUG_VERBOSE
     char buf[1024];
 
     va_list arglist;
     va_start(arglist, format);
-    vsprintf(buf, format ,arglist);
+    vsprintf(buf, format, arglist);
     va_end(arglist);
 
-    cout << buf << endl;
-#endif
-}
-
-template<class T>
-void printValue(T &value) {
-#ifdef PRINTVALUES
-    cout << fixed << setprecision(PRECISION) << value << endl;
-#endif
-}
-
-template<class T>
-void printDebugValue(T &value, string name) {
-#ifdef PRINTVALUES
-    cout << name << " = " << fixed << setprecision(PRECISION) << value << endl;
+    cout << fixed << setprecision(DEBUG_PRECISION) << buf << endl;
 #endif
 }
 

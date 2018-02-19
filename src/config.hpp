@@ -1,0 +1,10 @@
+//
+// Created by Laurens van Dam on 19/02/2018.
+//
+
+#ifndef PAIRHMM_SIMPLE_CONFIG_HPP
+#define PAIRHMM_SIMPLE_CONFIG_HPP
+
+#define DEBUG_PRECISION 40
+
+#endif //PAIRHMM_SIMPLE_CONFIG_HPP

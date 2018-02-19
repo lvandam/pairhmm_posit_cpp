@@ -9,6 +9,8 @@
 #include "pairhmm_float.hpp"
 #include "pairhmm_posit.hpp"
 
+#define DEBUG_PRECISION 40
+
 using namespace std;
 
 int main(int argc, char *argv[]) {

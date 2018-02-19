@@ -11,6 +11,7 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include "testcase.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -24,7 +25,7 @@ public:
         int read_size;
         input >> read_size;
 
-        cout << "Number of reads: " << read_size << endl;
+        printDebug("Number of reads: %d", read_size);
 
         std::vector<Testcase> testcases;
         testcases.reserve(read_size);
