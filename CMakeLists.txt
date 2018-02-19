@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(pairhmm_simple)
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-DPOSIT_VERBOSE_OUTPUT -DPOSIT_TRACE_DECODE -DPOSIT_TRACE_CONVERSION -DPOSIT_TRACE_ROUNDING")
+set(CMAKE_CXX_FLAGS "-DPOSIT_VERBOSE_OUTPUT -DPRINTVALUES") #-DPOSIT_TRACE_DECODE -DPOSIT_TRACE_CONVERSION -DPOSIT_TRACE_ROUNDING")
 
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
@@ -19,5 +19,10 @@ ExternalProject_Add(universal
 
 include_directories(${EXTERNAL_INSTALL_LOCATION}/src/universal/posit)
 
-add_executable(pairhmm_simple main.cpp inputreader.hpp testcase.hpp pairhmm_float.hpp pairhmm_posit.hpp)
+file(GLOB project_SRC
+        "src/*.h"
+        "src/*.cpp"
+        )
+
+add_executable(pairhmm_simple ${project_SRC})
 add_dependencies(pairhmm_simple universal)
