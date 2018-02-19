@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iomanip>
 #include <vector>
+#include <ctime>
 #include "config.hpp"
 
 template<class T>
@@ -49,7 +50,10 @@ public:
     }
 
     void exportDebugValues(string filename) {
-        ofstream outfile(filename);
+        auto t = std::time(nullptr);
+        auto tm = *std::localtime(&t);
+        ofstream outfile(filename, ios::out|ios::app);
+        outfile << endl << put_time(&tm, "%d-%m-%Y %H:%M:%S") << endl << "===================" << endl;
 
         for(auto el : items) {
             outfile << el.name << "," << fixed << setprecision(DEBUG_PRECISION) << el.value << endl;
