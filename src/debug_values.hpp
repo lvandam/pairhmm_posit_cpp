@@ -6,20 +6,25 @@
 #define PAIRHMM_SIMPLE_INTERMEDIATE_HPP
 
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <vector>
 #include "config.hpp"
 
 template<class T>
-class Intermediate {
+class DebugValues {
 private:
-    std::vector<T> items;
+    struct Entry {
+        char name[1024];
+        T value;
+    };
+
+    std::vector<Entry> items;
 
 public:
-    Intermediate() = default;
+    DebugValues() = default;
 
     void debugValue(T value, const char* format, ...) {
-#ifdef DEBUG_VALUES
         char buf[1024];
 
         va_list arglist;
@@ -27,10 +32,30 @@ public:
         vsprintf(buf, format ,arglist);
         va_end(arglist);
 
-        items.push_back(value);
+        Entry entry;
+        strcpy(entry.name, buf);
+        entry.value = value;
+        items.push_back(entry);
 
+#ifdef DEBUG_VALUES
         cout << buf << " = " << fixed << setprecision(DEBUG_PRECISION) << value << endl;
 #endif
+    }
+
+    void printDebugValues() {
+        for(auto el : items) {
+            cout << setw(20) << el.name << " = " << fixed << setprecision(DEBUG_PRECISION) << el.value << endl;
+        }
+    }
+
+    void exportDebugValues(string filename) {
+        ofstream outfile(filename);
+
+        for(auto el : items) {
+            outfile << el.name << "," << fixed << setprecision(DEBUG_PRECISION) << el.value << endl;
+        }
+
+        outfile.close();
     }
 };
 
