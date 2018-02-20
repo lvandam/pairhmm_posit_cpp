@@ -36,11 +36,8 @@ int main(int argc, char *argv[]) {
     for(int i = 0; i < testcases.size(); i++) {
         printDebug("Read #%d", i);
 
-        double dec_error_float = abs(log10(results_float[i] / 1140165690094602607336957012851.948));
-        cout << "-- FLOAT = " << fixed << setprecision(50) << results_float[i] << " -- log10 = " << log10(results_float[i]) << " -- decimal error: " << dec_error_float << endl;
-
-        double dec_error_posit = abs(log10(results_posit[i] / 1140165690094602607336957012851.948));
-        cout << "-- POSIT = " << fixed << setprecision(50) << results_posit[i] << " -- log10 = " << log10(results_posit[i]) << " -- decimal error: " << dec_error_posit << endl;
+        cout << "-- FLOAT = " << fixed << setprecision(50) << results_float[i] << " -- log10 = " << log10(results_float[i]);
+        cout << "-- POSIT = " << fixed << setprecision(50) << results_posit[i] << " -- log10 = " << log10(results_posit[i]);
     }
     cout << endl;
 

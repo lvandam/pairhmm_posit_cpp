@@ -19,8 +19,6 @@ using namespace sw::unum;
 
 class PairHMMPosit {
 private:
-    static constexpr size_t quire_capacity = 6;
-
     static posit<NBITS, ES> score_to_probability(int i) {
         return powf(10.f, -((float) i) / 10.f);
     }
