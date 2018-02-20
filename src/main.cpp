@@ -36,8 +36,8 @@ int main(int argc, char *argv[]) {
     for(int i = 0; i < testcases.size(); i++) {
         printDebug("Read #%d", i);
 
-        cout << "-- FLOAT = " << fixed << setprecision(50) << results_float[i] << " -- log10 = " << log10(results_float[i]);
-        cout << "-- POSIT = " << fixed << setprecision(50) << results_posit[i] << " -- log10 = " << log10(results_posit[i]);
+        cout << "-- FLOAT = " << fixed << setprecision(50) << results_float[i] << " -- log10 = " << log10(results_float[i]) << endl;
+        cout << "-- POSIT = " << fixed << setprecision(50) << results_posit[i] << " -- log10 = " << log10(results_posit[i]) << endl;
     }
     cout << endl;
 
