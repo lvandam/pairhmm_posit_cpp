@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(pairhmm_simple)
+project(pairhmm)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "-DPOSIT_VERBOSE_OUTPUT")# -DDEBUG_VALUES -DDEBUG_VERBOSE #-DPOSIT_TRACE_DECODE -DPOSIT_TRACE_CONVERSION -DPOSIT_TRACE_ROUNDING")
@@ -19,10 +19,25 @@ ExternalProject_Add(universal
 
 include_directories(${EXTERNAL_INSTALL_LOCATION}/src/universal/posit)
 
-file(GLOB project_SRC
-        "src/*.hpp"
-        "src/*.cpp"
+file(GLOB pairhmm_SRC
+        "src/pairhmm/*.hpp"
+        "src/pairhmm/*.cpp"
         )
 
-add_executable(pairhmm_simple ${project_SRC})
-add_dependencies(pairhmm_simple universal)
+file(GLOB tools_SRC
+        "src/tools/*.hpp"
+        "src/tools/*.cpp"
+        )
+
+add_executable(pairhmm ${pairhmm_SRC})
+add_executable(phred_to_posit ${tools_SRC})
+
+add_dependencies(pairhmm universal)
+add_dependencies(phred_to_posit universal)
+
+set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
+        /usr/local/lib
+        /usr/local/gfortran/lib)
+find_library(QUADMATH_LIB libquadmath.a)
+target_link_libraries(phred_to_posit ${QUADMATH_LIB})

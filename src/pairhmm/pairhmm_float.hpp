@@ -2,51 +2,33 @@
 // Created by Laurens van Dam on 08/02/2018.
 //
 
-#ifndef PAIRHMM_SIMPLE_PAIRHMM_POSIT_HPP
-#define PAIRHMM_SIMPLE_PAIRHMM_POSIT_HPP
+#ifndef PAIRHMM_SIMPLE_PAIRHMM_HPP
+#define PAIRHMM_SIMPLE_PAIRHMM_HPP
 
 #include <cmath>
-#include <posit>
 #include "testcase.hpp"
 #include "debug_values.hpp"
 #include "utils.hpp"
 
-#define NBITS 32
-#define ES 2
-
-using namespace std;
-using namespace sw::unum;
-
-class PairHMMPosit {
+class PairHMMFloat {
 private:
-    static posit<NBITS, ES> score_to_probability(int i) {
-        return powf(10.f, -((float) i) / 10.f);
+    static float score_to_probability(int Q) {
+        return powf(10.f, -((float) Q) / 10.f);
     }
 
 public:
-    DebugValues<posit<NBITS, ES>> debug_values;
+    DebugValues<float> debug_values;
 
     float compute_full_prob(Testcase *testcase) {
         int r, c;
         int ROWS = testcase->read_size;
         int COLS = testcase->haplotype_size;
 
-        std::vector<std::vector<posit<NBITS, ES>>> M;
-        std::vector<std::vector<posit<NBITS, ES>>> X;
-        std::vector<std::vector<posit<NBITS, ES>>> Y;
-        std::vector<std::vector<posit<NBITS, ES>>> p;
-        std::vector<std::vector<posit<NBITS, ES>>> distm;
-
-        // Initialize matrices
-        for (int i = 0; i < 350; i++) {
-            std::vector<posit<NBITS, ES>> row_m_x_y(350);
-            M.push_back(row_m_x_y);
-            X.push_back(row_m_x_y);
-            Y.push_back(row_m_x_y);
-            distm.push_back(row_m_x_y);
-            std::vector<posit<NBITS, ES>> row_p(6);
-            p.push_back(row_p);
-        }
+        float M[350][350];
+        float X[350][350];
+        float Y[350][350];
+        float p[350][6];
+        float distm[350][350];
 
         int MM = 0, GapM = 1, MX = 2, XX = 3, MY = 4, YY = 5;
 
@@ -85,11 +67,10 @@ public:
         for (c = 0; c <= COLS; c++) {
             M[0][c] = 0;
             X[0][c] = 0;
-            Y[0][c] = ldexpf(1.f, 100) / (float) (testcase->haplotype_size);
+            Y[0][c] = INITIAL_CONSTANT / (float) (testcase->haplotype_size);
             debug_values.debugValue(Y[0][c], "Y[0][%d]", c);
         }
 
-        // Initialize first column of every row
         for (r = 1; r <= ROWS; r++) {
             M[r][0] = 0;
             X[r][0] = X[r - 1][0] * p[r - 1][XX];
@@ -138,15 +119,15 @@ public:
         }
 
         printDebug("RESULT ACCUMULATION");
-        posit<NBITS, ES> result;
+        float result = 0;
         for (c = 1; c <= COLS; c++) {
             result += M[ROWS][c] + X[ROWS][c];
             debug_values.debugValue(result, "result");
         }
 
-        // Convert back to float
-        return float(result);
+        return result;
     }
 };
 
-#endif //PAIRHMM_SIMPLE_PAIRHMM_POSIT_HPP
+
+#endif //PAIRHMM_SIMPLE_PAIRHMM_HPP
