@@ -34,10 +34,3 @@ add_executable(phred_to_posit ${tools_SRC})
 
 add_dependencies(pairhmm universal)
 add_dependencies(phred_to_posit universal)
-
-set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
-        /usr/local/lib
-        /usr/local/gfortran/lib)
-find_library(QUADMATH_LIB libquadmath.a)
-target_link_libraries(phred_to_posit ${QUADMATH_LIB})

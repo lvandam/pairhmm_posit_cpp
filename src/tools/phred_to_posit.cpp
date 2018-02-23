@@ -4,27 +4,27 @@
 
 #include <iostream>
 #include <posit>
-#include <quadmath.h>
 
 #define NBITS 32
 #define ES 2
 
-using namespace sw::unum;
 using namespace std;
+using namespace sw::unum;
 
-double score_to_probability(int Q) {
-    return powf(10.f, -((double) Q) / 10.f);
+long double score_to_probability(int Q) {
+    return powl(10, -static_cast<long double>(Q) / 10);
 }
 
 int main() {
     int Q_min = 1;
     int Q_max = 100;
 
-    cout << "Q,E_quad,E_float,E_posit" << endl;
+    cout << "Q,E_ld,E_f,E_p" << endl;
     for(int Q = Q_min; Q <= Q_max; Q++) {
-        __float128 E_quad = score_to_probability(Q);
+        long double E = score_to_probability(Q);
+        posit<32,2> E_posit(E);
 
-        printf("%d,%.60f,%.60f,%.60f\n", Q, E_quad, float(E_quad), float(posit<NBITS,ES>(E_quad)));
+        cout << fixed << setprecision(50) << Q <<","<< E <<","<< static_cast<float>(E) <<","<< E_posit << endl;
     }
 
     return 0;
