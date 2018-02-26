@@ -8,7 +8,7 @@ set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 include(ExternalProject)
 ExternalProject_Add(universal
-        GIT_REPOSITORY https://github.com/stillwater-sc/universal
+        GIT_REPOSITORY https://github.com/lvandam/universal
         GIT_TAG master
         PREFIX ${EXTERNAL_INSTALL_LOCATION}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}

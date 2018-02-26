@@ -12,8 +12,8 @@
 
 class PairHMMFloat {
 private:
-    static float score_to_probability(int Q) {
-        return powf(10.f, -((float) Q) / 10.f);
+    long double score_to_probability(int Q) {
+        return powl(10, -static_cast<long double>(Q) / 10);
     }
 
 public:

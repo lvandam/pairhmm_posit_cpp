@@ -20,7 +20,7 @@ using namespace sw::unum;
 class PairHMMPosit {
 private:
     static posit<NBITS, ES> score_to_probability(int Q) {
-        return powf(10.f, -((float) Q) / 10.f);
+        return powl(10.f, -((long double) Q) / 10.f);
     }
 
 public:

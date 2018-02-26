@@ -11,6 +11,11 @@
 
 using namespace std;
 
+template<typename T>
+T score_to_probability(int Q) {
+    return powl(10, -static_cast<T>(Q) / 10);
+}
+
 void printDebug(const char* format, ...) {
 #ifdef DEBUG_VERBOSE
     char buf[1024];
