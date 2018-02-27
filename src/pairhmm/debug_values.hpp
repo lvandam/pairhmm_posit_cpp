@@ -1,6 +1,8 @@
-//
-// Created by Laurens van Dam on 19/02/2018.
-//
+/**
+    @author Laurens van Dam
+    @date 19/02/2018
+    @copyright 2018 All rights reserved.
+**/
 
 #ifndef PAIRHMM_SIMPLE_INTERMEDIATE_HPP
 #define PAIRHMM_SIMPLE_INTERMEDIATE_HPP

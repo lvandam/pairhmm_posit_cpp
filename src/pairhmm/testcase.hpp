@@ -1,6 +1,8 @@
-//
-// Created by Laurens van Dam on 08/02/2018.
-//
+/**
+    @author Laurens van Dam
+    @date 08/02/2018
+    @copyright 2018 All rights reserved.
+**/
 
 #ifndef PAIRHMM_SIMPLE_TESTCASE_HPP
 #define PAIRHMM_SIMPLE_TESTCASE_HPP

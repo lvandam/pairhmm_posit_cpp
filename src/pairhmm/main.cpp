@@ -1,3 +1,9 @@
+/**
+    @author Laurens van Dam
+    @date 02/02/2018
+    @copyright 2018 All rights reserved.
+**/
+
 #include <fstream>
 #include <sstream>
 #include <iostream>

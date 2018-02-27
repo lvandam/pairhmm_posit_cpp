@@ -1,6 +1,8 @@
-//
-// Created by Laurens van Dam on 21/02/2018.
-//
+/**
+    @author Laurens van Dam
+    @date 21/02/2018
+    @copyright 2018 All rights reserved.
+**/
 
 #include <iostream>
 #include <posit>
