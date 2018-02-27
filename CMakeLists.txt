@@ -17,7 +17,18 @@ ExternalProject_Add(universal
         INSTALL_COMMAND ""
         )
 
+ExternalProject_Add(gnuplot-iostream
+        GIT_REPOSITORY https://github.com/dstahlke/gnuplot-iostream
+        GIT_TAG master
+        PREFIX ${EXTERNAL_INSTALL_LOCATION}
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+        )
+
 include_directories(${EXTERNAL_INSTALL_LOCATION}/src/universal/posit)
+include_directories(${EXTERNAL_INSTALL_LOCATION}/src/gnuplot-iostream)
 
 file(GLOB pairhmm_SRC
         "src/pairhmm/*.hpp"
@@ -32,5 +43,10 @@ file(GLOB tools_SRC
 add_executable(pairhmm ${pairhmm_SRC})
 add_executable(phred_to_posit ${tools_SRC})
 
+    target_link_libraries(phred_to_posit LINK_PUBLIC boost_iostreams)
+target_link_libraries(phred_to_posit LINK_PUBLIC boost_system)
+target_link_libraries(phred_to_posit LINK_PUBLIC boost_filesystem)
+
 add_dependencies(pairhmm universal)
 add_dependencies(phred_to_posit universal)
+add_dependencies(phred_to_posit gnuplot-iostream)
