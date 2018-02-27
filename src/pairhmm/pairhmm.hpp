@@ -24,6 +24,14 @@ private:
     }
 
 public:
+    PairHMM() : INITIAL_CONSTANT(ldexpf(1.f, 100)) {
+    }
+
+    explicit PairHMM(long double initial_constant) : INITIAL_CONSTANT(initial_constant) {
+    }
+
+    long double INITIAL_CONSTANT;
+
     DebugValues<T> debug_values;
 
     float compute_full_prob(Testcase *testcase) {

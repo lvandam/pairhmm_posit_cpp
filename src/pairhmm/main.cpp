@@ -15,48 +15,41 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    cout.precision(50);
+    cout.flags(cout.fixed);
 
     InputReader reader {};
-    PairHMM<long double> pairhmm_ld {};
-    PairHMM<float> pairhmm_float {};
-    PairHMM<posit<32,2>> pairhmm_posit {};
 
-    std::vector<Testcase> testcases = reader.from_file(argv[1]);
+    float result;
+
+    std::vector<float> results_ld;
+    PairHMM<long double> pairhmm_ld;
+
+    std::vector<float> results_float;
+    PairHMM<float> pairhmm_float;
+
+    std::vector<float> results_posit;
+    PairHMM<posit<32,2>> pairhmm_posit;
 
     // Perform calculation per testcase for various number representations
-    std::vector<float> results_ld;
-    std::vector<float> results_float;
-    std::vector<float> results_posit;
+    std::vector<Testcase> testcases = reader.from_file(argv[1]);
     for(Testcase testcase : testcases)
     {
-        printDebug(">>> LONG DOUBLE");
-        results_ld.push_back(pairhmm_ld.compute_full_prob(&testcase));
-        printDebug(">>> FLOAT");
-        results_float.push_back(pairhmm_float.compute_full_prob(&testcase));
-        printDebug("\n>>> POSIT");
-        results_posit.push_back(pairhmm_posit.compute_full_prob(&testcase));
+        result = pairhmm_ld.compute_full_prob(&testcase);
+        results_ld.push_back(result);
+        cout << "-- LONG DOUBLE -- " << result << " -- log10 = " << log10(result) << endl;
+        pairhmm_ld.debug_values.printDebugValues(); pairhmm_ld.debug_values.exportDebugValues("pairhmm_ld.txt");
+
+        result = pairhmm_float.compute_full_prob(&testcase);
+        results_float.push_back(result);
+        cout << "-- FLOAT -- = " << result << " -- log10 = " << log10(result) << endl;
+        pairhmm_float.debug_values.printDebugValues(); pairhmm_float.debug_values.exportDebugValues("pairhmm_float.txt");
+
+        result = pairhmm_posit.compute_full_prob(&testcase);
+        results_posit.push_back(result);
+        cout << "-- POSIT<32,2> -- = " << result << " -- log10 = " << log10(result) << endl;
+        pairhmm_posit.debug_values.printDebugValues(); pairhmm_posit.debug_values.exportDebugValues("pairhmm_posit.txt");
     }
-    cout << endl;
-
-    // Results
-    cout << "RESULTS" << endl;
-    for(int i = 0; i < testcases.size(); i++) {
-        printDebug("Read #%d", i);
-
-        cout << "-- LONG DOUBLE = " << fixed << setprecision(50) << results_ld[i] << " -- log10 = " << log10(results_ld[i]) << endl;
-        cout << "-- FLOAT = " << fixed << setprecision(50) << results_float[i] << " -- log10 = " << log10(results_float[i]) << endl;
-        cout << "-- POSIT = " << fixed << setprecision(50) << results_posit[i] << " -- log10 = " << log10(results_posit[i]) << endl;
-    }
-    cout << endl;
-
-    // Print intermediate debug values
-    cout << "DEBUG VALUES" << endl;
-    cout << ">> LONG DOUBLE" << endl;
-    pairhmm_ld.debug_values.printDebugValues(); pairhmm_ld.debug_values.exportDebugValues("pairhmm_ld.txt");
-    cout << ">> FLOAT" << endl;
-    pairhmm_float.debug_values.printDebugValues(); pairhmm_float.debug_values.exportDebugValues("pairhmm_float.txt");
-    cout << ">> POSIT" << endl;
-    pairhmm_posit.debug_values.printDebugValues(); pairhmm_posit.debug_values.exportDebugValues("pairhmm_posit.txt");
 
     return 0;
 }
