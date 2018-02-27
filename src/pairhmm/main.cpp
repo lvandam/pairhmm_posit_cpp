@@ -4,26 +4,22 @@
     @copyright 2018 All rights reserved.
 **/
 
-#include <fstream>
-#include <sstream>
 #include <iostream>
 #include <vector>
 #include <iomanip>
 #include <cmath>
 
 #include "inputreader.hpp"
-#include "pairhmm_ld.hpp"
-#include "pairhmm_float.hpp"
-#include "pairhmm_posit.hpp"
+#include "pairhmm.hpp"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
 
     InputReader reader {};
-    PairHMMLongDouble pairhmm_ld {};
-    PairHMMFloat pairhmm_float {};
-    PairHMMPosit pairhmm_posit {};
+    PairHMM<long double> pairhmm_ld {};
+    PairHMM<float> pairhmm_float {};
+    PairHMM<posit<32,2>> pairhmm_posit {};
 
     std::vector<Testcase> testcases = reader.from_file(argv[1]);
 
