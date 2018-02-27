@@ -2,13 +2,8 @@
 // Created by Laurens van Dam on 08/02/2018.
 //
 
-#ifndef PAIRHMM_FLOAT_HPP
-#define PAIRHMM_FLOAT_HPP
-
-#include <cmath>
-#include "testcase.hpp"
-#include "debug_values.hpp"
-#include "utils.hpp"
+#ifndef PAIRHMM_LD_HPP
+#define PAIRHMM_LD_HPP
 
 #include <cmath>
 #include "testcase.hpp"
@@ -17,34 +12,34 @@
 
 using namespace std;
 
-class PairHMMFloat {
+class PairHMMLongDouble {
 private:
     static long double score_to_probability(int Q) {
         return powl(10.f, -((long double) Q) / 10.f);
     }
 
 public:
-    DebugValues<float> debug_values;
+    DebugValues<long double> debug_values;
 
     float compute_full_prob(Testcase *testcase) {
         int r, c;
         int ROWS = testcase->read_size;
         int COLS = testcase->haplotype_size;
 
-        std::vector<std::vector<float>> M;
-        std::vector<std::vector<float>> X;
-        std::vector<std::vector<float>> Y;
-        std::vector<std::vector<float>> p;
-        std::vector<std::vector<float>> distm;
+        std::vector<std::vector<long double>> M;
+        std::vector<std::vector<long double>> X;
+        std::vector<std::vector<long double>> Y;
+        std::vector<std::vector<long double>> p;
+        std::vector<std::vector<long double>> distm;
 
         // Initialize matrices
         for (int i = 0; i < 350; i++) {
-            std::vector<float> row_m_x_y(350);
+            std::vector<long double> row_m_x_y(350);
             M.push_back(row_m_x_y);
             X.push_back(row_m_x_y);
             Y.push_back(row_m_x_y);
             distm.push_back(row_m_x_y);
-            std::vector<float> row_p(6);
+            std::vector<long double> row_p(6);
             p.push_back(row_p);
         }
 
@@ -138,14 +133,16 @@ public:
         }
 
         printDebug("RESULT ACCUMULATION");
-        float result = 0;
+        long double result = 0;
         for (c = 1; c <= COLS; c++) {
             result += M[ROWS][c] + X[ROWS][c];
             debug_values.debugValue(result, "result");
         }
 
-        return result;
+        // Convert back to float
+        return float(result);
     }
 };
 
-#endif //PAIRHMM_FLOAT_HPP
+
+#endif //PAIRHMM_LD_HPP

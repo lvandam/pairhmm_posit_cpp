@@ -2,8 +2,8 @@
 // Created by Laurens van Dam on 08/02/2018.
 //
 
-#ifndef PAIRHMM_SIMPLE_PAIRHMM_POSIT_HPP
-#define PAIRHMM_SIMPLE_PAIRHMM_POSIT_HPP
+#ifndef PAIRHMM_POSIT_HPP
+#define PAIRHMM_POSIT_HPP
 
 #include <cmath>
 #include <posit>
@@ -138,7 +138,7 @@ public:
         }
 
         printDebug("RESULT ACCUMULATION");
-        posit<NBITS, ES> result;
+        posit<NBITS, ES> result = 0;
         for (c = 1; c <= COLS; c++) {
             result += M[ROWS][c] + X[ROWS][c];
             debug_values.debugValue(result, "result");
@@ -149,4 +149,4 @@ public:
     }
 };
 
-#endif //PAIRHMM_SIMPLE_PAIRHMM_POSIT_HPP
+#endif //PAIRHMM_POSIT_HPP
