@@ -35,15 +35,15 @@ file(GLOB pairhmm_SRC
         "src/pairhmm/*.cpp"
         )
 
-file(GLOB tools_SRC
-        "src/tools/*.hpp"
-        "src/tools/*.cpp"
+file(GLOB benchmarks_SRC
+        "src/benchmarks/*.hpp"
+        "src/benchmarks/*.cpp"
         )
 
 add_executable(pairhmm ${pairhmm_SRC})
-add_executable(phred_to_posit ${tools_SRC})
+add_executable(phred_to_posit ${benchmarks_SRC})
 
-    target_link_libraries(phred_to_posit LINK_PUBLIC boost_iostreams)
+target_link_libraries(phred_to_posit LINK_PUBLIC boost_iostreams)
 target_link_libraries(phred_to_posit LINK_PUBLIC boost_system)
 target_link_libraries(phred_to_posit LINK_PUBLIC boost_filesystem)
 
