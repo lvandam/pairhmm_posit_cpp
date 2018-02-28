@@ -9,12 +9,14 @@
 
 #include <cmath>
 #include <posit>
+#include "utils.hpp"
 #include "testcase.hpp"
 #include "debug_values.hpp"
-#include "utils.hpp"
 
 using namespace std;
 using namespace sw::unum;
+
+void printDebug(const char* format, ...);
 
 template<class T>
 class PairHMM {

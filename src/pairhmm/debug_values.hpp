@@ -4,8 +4,8 @@
     @copyright 2018 All rights reserved.
 **/
 
-#ifndef PAIRHMM_SIMPLE_INTERMEDIATE_HPP
-#define PAIRHMM_SIMPLE_INTERMEDIATE_HPP
+#ifndef PAIRHMM_DEBUG_VALUES_HPP
+#define PAIRHMM_DEBUG_VALUES_HPP
 
 #include <iostream>
 #include <fstream>
@@ -13,6 +13,8 @@
 #include <vector>
 #include <ctime>
 #include "config.hpp"
+
+using namespace std;
 
 template<class T>
 class DebugValues {
@@ -81,4 +83,4 @@ public:
     }
 };
 
-#endif //PAIRHMM_SIMPLE_INTERMEDIATE_HPP
+#endif //PAIRHMM_DEBUG_VALUES_HPP

@@ -4,14 +4,15 @@
     @copyright 2018 All rights reserved.
 **/
 
-#ifndef PAIRHMM_SIMPLE_INPUTREADER_HPP
-#define PAIRHMM_SIMPLE_INPUTREADER_HPP
+#ifndef PAIRHMM_INPUTREADER_HPP
+#define PAIRHMM_INPUTREADER_HPP
 
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+
 #include "testcase.hpp"
 #include "utils.hpp"
 
@@ -78,4 +79,4 @@ public:
     }
 };
 
-#endif //PAIRHMM_SIMPLE_INPUTREADER_HPP
+#endif //PAIRHMM_INPUTREADER_HPP
