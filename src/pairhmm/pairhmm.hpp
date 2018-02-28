@@ -149,7 +149,7 @@ public:
         T result = 0;
         for (c = 1; c <= COLS; c++) {
             result += M[ROWS][c] + X[ROWS][c];
-            debug_values.debugValue(result, "result");
+            debug_values.debugValue(result, "result[%d]", c);
         }
 
         // Convert back to float

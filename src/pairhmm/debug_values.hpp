@@ -63,6 +63,22 @@ public:
 
         outfile.close();
     }
+
+    std::vector<std::string> getNames() {
+        std::vector<std::string> result;
+        for(auto el : items) {
+            result.push_back(el.name);
+        }
+        return result;
+    }
+
+    std::vector<T> getValues() {
+        std::vector<T> result;
+        for(auto el : items) {
+            result.push_back(el.value);
+        }
+        return result;
+    }
 };
 
 #endif //PAIRHMM_SIMPLE_INTERMEDIATE_HPP
