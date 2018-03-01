@@ -5,7 +5,7 @@
 **/
 
 #include <iostream>
-#include <posit>
+#include <posit/posit>
 #include <vector>
 #include <cmath>
 

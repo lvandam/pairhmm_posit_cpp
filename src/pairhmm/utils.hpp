@@ -13,6 +13,7 @@
 
 #include "config.hpp"
 #include "pairhmm.hpp"
+#include "pairhmm_posit.hpp"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ void printDebug(const char* format, ...) {
 #endif
 }
 
-void writeBenchmark(PairHMM<long double>& pairhmm_ld, PairHMM<float>& pairhmm_float, PairHMM<posit<32,2>>& pairhmm_posit) {
+void writeBenchmark(PairHMM<auto, auto>& pairhmm_ld, PairHMM<auto, auto>& pairhmm_float, PairHMMPosit<auto, auto>& pairhmm_posit) {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
     ofstream outfile("pairhmm_values.txt", ios::out|ios::app);

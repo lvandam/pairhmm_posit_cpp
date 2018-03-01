@@ -1,11 +1,11 @@
 /**
     @author Laurens van Dam
-    @date 27/02/2018
+    @date 01/03/2018
     @copyright 2018 All rights reserved.
 **/
 
-#ifndef PAIRHMM_PAIRHMM_HPP
-#define PAIRHMM_PAIRHMM_HPP
+#ifndef PAIRHMM_PAIRHMM_POSIT_HPP
+#define PAIRHMM_PAIRHMM_POSIT_HPP
 
 #include <cmath>
 #include <posit/posit>
@@ -19,17 +19,17 @@ using namespace sw::unum;
 void printDebug(const char* format, ...);
 
 template<class T, class QUIRE>
-class PairHMM {
+class PairHMMPosit {
 private:
     static T score_to_probability(int Q) {
         return powl(10.f, -((long double) Q) / 10.f);
     }
 
 public:
-    PairHMM() : INITIAL_CONSTANT(ldexpf(1.f, 100)) {
+    PairHMMPosit() : INITIAL_CONSTANT(ldexpf(1.f, 100)) {
     }
 
-    explicit PairHMM(long double initial_constant) : INITIAL_CONSTANT(initial_constant) {
+    explicit PairHMMPosit(long double initial_constant) : INITIAL_CONSTANT(initial_constant) {
     }
 
     long double INITIAL_CONSTANT;
@@ -136,16 +136,30 @@ public:
 
         for (r = 1; r <= ROWS; r++) {
             for (c = 1; c <= COLS; c++) {
-//                M[r][c] = distm[r][c] * (M[r - 1][c - 1] * p[r][MM] + X[r - 1][c - 1] * p[r][GapM] + Y[r - 1][c - 1] * p[r][GapM]);
-                M[r][c] = std::fma(distm[r][c], std::fma(M[r - 1][c - 1], p[r][MM], std::fma(X[r - 1][c - 1], p[r][GapM], std::fma(Y[r - 1][c - 1], p[r][GapM], 0))), 0);
+                QUIRE Mq(0), Xq(0), Yq(0);
+                posit<32,2> Mposit, Xposit, Yposit, Mrc;
+
+                Mq += quire_mul(M[r - 1][c - 1], p[r][MM]);
+                Mq += quire_mul(X[r - 1][c - 1], p[r][GapM]);
+                Mq += quire_mul(Y[r - 1][c - 1], p[r][GapM]);
+                Mposit.convert(Mq.to_value());
+                Mrc = Mposit * distm[r][c];
+                M[r][c] = Mrc;
+
                 debug_values.debugValue(M[r][c], "M[%d][%d]", r, c);
 
-//                X[r][c] = M[r - 1][c] * p[r][MX] + X[r - 1][c] * p[r][XX];
-                X[r][c] = std::fma(M[r - 1][c], p[r][MX], std::fma(X[r - 1][c], p[r][XX], 0));
+                Xq += quire_mul(M[r - 1][c], p[r][MX]);
+                Xq += quire_mul(X[r - 1][c], p[r][XX]);
+                Xposit.convert(Xq.to_value());
+                X[r][c] = Xposit;
+
                 debug_values.debugValue(X[r][c], "X[%d][%d]", r, c);
 
-//                Y[r][c] = M[r][c - 1] * p[r][MY] + Y[r][c - 1] * p[r][YY];
-                Y[r][c] = std::fma(M[r][c - 1], p[r][MY], std::fma(Y[r][c - 1], p[r][YY], 0));
+                Yq += quire_mul(M[r][c - 1], p[r][MY]);
+                Yq += quire_mul(Y[r][c - 1], p[r][YY]);
+                Yposit.convert(Yq.to_value());
+                Y[r][c] = Yposit;
+
                 debug_values.debugValue(Y[r][c], "Y[%d][%d]", r, c);
             }
         }
@@ -154,8 +168,8 @@ public:
         QUIRE quire(0);
         for (c = 1; c <= COLS; c++) {
             constexpr int bits = std::numeric_limits<long double>::digits - 1;
-            quire += sw::unum::value<bits>(M[ROWS][c]);
-            quire += sw::unum::value<bits>(X[ROWS][c]);
+            quire += M[ROWS][c].convert_to_scientific_notation();
+            quire += X[ROWS][c].convert_to_scientific_notation();
             debug_values.debugValue(float(quire.to_value()), "result[%d]", c);
         }
 
@@ -164,4 +178,4 @@ public:
     }
 };
 
-#endif //PAIRHMM_PAIRHMM_HPP
+#endif //PAIRHMM_PAIRHMM_POSIT_HPP
