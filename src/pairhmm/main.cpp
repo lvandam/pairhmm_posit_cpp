@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 
     std::vector<float> results_ld, results_float, results_posit;
 
-    const long double initial_constant = ldexpf(1.0f, 5);
+    const long double initial_constant = ldexpf(1.0f, 100);
 
     PairHMM<long double> pairhmm_ld(initial_constant);
     PairHMM<float> pairhmm_float(initial_constant);
