@@ -43,14 +43,18 @@ void writeBenchmark(PairHMM<long double>& pairhmm_ld, PairHMM<float>& pairhmm_fl
     outfile << "name,dE_f,dE_p,log(abs(dE_f)),log(abs(dE_p))" << endl;
     for(auto tup : boost::combine(names, ld_values, float_values, posit_values)) {
         string name;
-        long double E;
+        long double E, dE_f, dE_p;
         float E_f;
         posit<32,2> E_p;
 
         boost::tie(name, E, E_f, E_p) = tup;
 
-        long double dE_f = (E_f - E) / E;
-        long double dE_p = (static_cast<long double>(E_p) - E) / E;
+        if(E == 0) {
+            dE_f = 0; dE_p = 0;
+        } else {
+            dE_f = (E_f - E) / E;
+            dE_p = (static_cast<long double>(E_p) - E) / E;
+        }
 
         // Relative error values
         outfile << setprecision(50) << fixed << name <<","<< dE_f <<","<< dE_p <<","<< log10l(abs(dE_f)) <<","<< log10l(abs(dE_p)) << endl;
