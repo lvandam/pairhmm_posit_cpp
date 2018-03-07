@@ -136,31 +136,40 @@ public:
 
         for (r = 1; r <= ROWS; r++) {
             for (c = 1; c <= COLS; c++) {
-//                M[r][c] = distm[r][c] * (M[r - 1][c - 1] * p[r][MM] + X[r - 1][c - 1] * p[r][GapM] + Y[r - 1][c - 1] * p[r][GapM]);
-                M[r][c] = std::fma(distm[r][c], std::fma(M[r - 1][c - 1], p[r][MM], std::fma(X[r - 1][c - 1], p[r][GapM], std::fma(Y[r - 1][c - 1], p[r][GapM], 0))), 0);
+                M[r][c] = distm[r][c] * (M[r - 1][c - 1] * p[r][MM] + X[r - 1][c - 1] * p[r][GapM] + Y[r - 1][c - 1] * p[r][GapM]);
                 debug_values.debugValue(M[r][c], "M[%d][%d]", r, c);
 
-//                X[r][c] = M[r - 1][c] * p[r][MX] + X[r - 1][c] * p[r][XX];
-                X[r][c] = std::fma(M[r - 1][c], p[r][MX], std::fma(X[r - 1][c], p[r][XX], 0));
+                X[r][c] = M[r - 1][c] * p[r][MX] + X[r - 1][c] * p[r][XX];
                 debug_values.debugValue(X[r][c], "X[%d][%d]", r, c);
 
-//                Y[r][c] = M[r][c - 1] * p[r][MY] + Y[r][c - 1] * p[r][YY];
-                Y[r][c] = std::fma(M[r][c - 1], p[r][MY], std::fma(Y[r][c - 1], p[r][YY], 0));
+                Y[r][c] = M[r][c - 1] * p[r][MY] + Y[r][c - 1] * p[r][YY];
                 debug_values.debugValue(Y[r][c], "Y[%d][%d]", r, c);
             }
         }
 
         printDebug("RESULT ACCUMULATION");
-        QUIRE quire(0);
-        for (c = 1; c <= COLS; c++) {
-            constexpr int bits = std::numeric_limits<long double>::digits - 1;
-            quire += sw::unum::value<bits>(M[ROWS][c]);
-            quire += sw::unum::value<bits>(X[ROWS][c]);
-            debug_values.debugValue(float(quire.to_value()), "result[%d]", c);
+
+        T result = 0;
+        for(c = 1; c <= COLS; c++) {
+            result += M[ROWS][c] + X[ROWS][c];
+            debug_values.debugValue(result, "result[%d]", c);
         }
 
-        // Convert back to float
-        return float(quire.to_value());
+        return float(result);
+
+
+
+
+//        QUIRE quire(0);
+//        for (c = 1; c <= COLS; c++) {
+//            constexpr int bits = std::numeric_limits<long double>::digits - 1;
+//            quire += sw::unum::value<bits>(M[ROWS][c]);
+//            quire += sw::unum::value<bits>(X[ROWS][c]);
+//            debug_values.debugValue(float(quire.to_value()), "result[%d]", c);
+//        }
+//
+//        // Convert back to float
+//        return float(quire.to_value());
     }
 };
 

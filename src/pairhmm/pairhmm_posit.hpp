@@ -137,14 +137,12 @@ public:
         for (r = 1; r <= ROWS; r++) {
             for (c = 1; c <= COLS; c++) {
                 QUIRE Mq(0), Xq(0), Yq(0);
-                posit<32,2> Mposit, Xposit, Yposit, Mrc;
-
-                Mq += quire_mul(M[r - 1][c - 1], p[r][MM]);
-                Mq += quire_mul(X[r - 1][c - 1], p[r][GapM]);
-                Mq += quire_mul(Y[r - 1][c - 1], p[r][GapM]);
+                posit<32,2> Mposit, Xposit, Yposit;
+                Mq += quire_mul(distm[r][c] * M[r - 1][c - 1], p[r][MM]);
+                Mq += quire_mul(distm[r][c] * X[r - 1][c - 1], p[r][GapM]);
+                Mq += quire_mul(distm[r][c] * Y[r - 1][c - 1], p[r][GapM]);
                 Mposit.convert(Mq.to_value());
-                Mrc = Mposit * distm[r][c];
-                M[r][c] = Mrc;
+                M[r][c] = Mposit;
 
                 debug_values.debugValue(M[r][c], "M[%d][%d]", r, c);
 

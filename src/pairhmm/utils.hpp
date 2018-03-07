@@ -10,10 +10,13 @@
 #include <iostream>
 #include <iomanip>
 #include <boost/range/combine.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include "config.hpp"
 #include "pairhmm.hpp"
 #include "pairhmm_posit.hpp"
+
+using boost::multiprecision::cpp_dec_float_50;
 
 using namespace std;
 
@@ -30,21 +33,22 @@ void printDebug(const char* format, ...) {
 #endif
 }
 
-void writeBenchmark(PairHMM<auto, auto>& pairhmm_ld, PairHMM<auto, auto>& pairhmm_float, PairHMMPosit<auto, auto>& pairhmm_posit) {
+void writeBenchmark(PairHMM<auto, auto>& pairhmm_dec50, PairHMM<auto, auto>& pairhmm_float, PairHMMPosit<auto, auto>& pairhmm_posit) {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
     ofstream outfile("pairhmm_values.txt", ios::out|ios::app);
     outfile << endl << put_time(&tm, "%d-%m-%Y %H:%M:%S") << endl << "===================" << endl;
 
-    auto names = pairhmm_ld.debug_values.getNames();
-    auto ld_values = pairhmm_ld.debug_values.getValues();
+    auto names = pairhmm_dec50.debug_values.getNames();
+    auto dec_values = pairhmm_dec50.debug_values.getValues();
     auto float_values = pairhmm_float.debug_values.getValues();
     auto posit_values = pairhmm_posit.debug_values.getValues();
 
     outfile << "name,dE_f,dE_p,log(abs(dE_f)),log(abs(dE_p))" << endl;
-    for(auto tup : boost::combine(names, ld_values, float_values, posit_values)) {
+    for(auto tup : boost::combine(names, dec_values, float_values, posit_values)) {
         string name;
-        long double E, dE_f, dE_p;
+        cpp_dec_float_50 E, dE_f, dE_p;
+
         float E_f;
         posit<32,2> E_p;
 
@@ -58,7 +62,7 @@ void writeBenchmark(PairHMM<auto, auto>& pairhmm_ld, PairHMM<auto, auto>& pairhm
         }
 
         // Relative error values
-        outfile << setprecision(50) << fixed << name <<","<< dE_f <<","<< dE_p <<","<< log10l(abs(dE_f)) <<","<< log10l(abs(dE_p)) << endl;
+        outfile << setprecision(50) << fixed << name <<","<< dE_f <<","<< dE_p <<","<< log10(abs(dE_f)) <<","<< log10(abs(dE_p)) << endl;
     }
     outfile.close();
 }
