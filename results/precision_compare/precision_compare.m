@@ -1,16 +1,26 @@
 clf;
 
-data = readtable('pairhmm_values_32_data_2-1.txt');
+data = readtable('pairhmm_values_1_data_2-1.txt');
 
 datalength = length(data{:,1});
 
 % Config (define different regions that should be plotted individually)
-main_title = 'Dataset = 32\_data.txt - Initial constant = 2^{1}';
-regions = [1 datalength; 4543 4638; 4543 4638; 7039 7134; 7135 datalength]; % start and end indices of each region
-titles = ["All intermediate values", "M[1][c]", "Y[1][c]", "M[27], X[27], Y[27]", "Result Accumulation"]; % region labels
-showlabels = [false, true, true, true, true]; % toggle X-axis variable names for each region
-wide = [true, false, false, true, true]; % horizontally wide plot for region
-filter_text = ["", "M", "Y", "", ""]; % filtered based on the first (name) column
+
+% 32_data
+% main_title = 'Dataset = 32\_data.txt - Initial constant = 2^{100}';
+% regions = [1 datalength; 4543 4638; 4543 4638; 7039 7134; 7135 datalength]; % start and end indices of each region
+% titles = ["All intermediate values", "M[1][c]", "Y[1][c]", "M[27], X[27], Y[27]", "Result Accumulation"]; % region labels
+% showlabels = [false, true, true, true, true]; % toggle X-axis variable names for each region
+% wide = [true, false, false, true, true]; % horizontally wide plot for region
+% filter_text = ["", "M", "Y", "", ""]; % filtered based on the first (name) column
+
+% 1_data
+main_title = 'Dataset = 1\_data.txt - Initial constant = 2^{1}';
+regions = [1 datalength]; % start and end indices of each region
+titles = ["All intermediate values"]; % region labels
+showlabels = [true]; % toggle X-axis variable names for each region
+wide = [true]; % horizontally wide plot for region
+filter_text = [""]; % filtered based on the first (name) column
 
 % Process
 wide_count = nnz(wide == true);
@@ -50,10 +60,10 @@ for row = 1:size(regions,1)
 
     start_idx = regions(row,1);
     end_idx = regions(row,2);
-    
+
     % Plot
     hold on
-    
+
     % Match with any given filter (start string)
     if filter_text(row) == ""
         data_x_filtered = find(ones(datalength,1) >= 0);
@@ -66,10 +76,10 @@ for row = 1:size(regions,1)
         data_matching = data_matching1 .* data_matching2;
         data_x_filtered = find(data_matching);
     end
-    
-    data_float_filtered = data{data_x_filtered, 4}
+
+    data_float_filtered = data{data_x_filtered, 4};
     data_posit_filtered = data{data_x_filtered, 5};
-    
+
     scatter(data_x_filtered, data_float_filtered, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'b', 'MarkerFaceAlpha', .7) % float %data{start_idx:end_idx,4},
     scatter(data_x_filtered, data_posit_filtered, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'r', 'MarkerFaceAlpha', .7) % posit<32,2> %data{start_idx:end_idx,5},
     legend({'float', 'posit<32,2>'});
@@ -77,6 +87,8 @@ for row = 1:size(regions,1)
     set(gca, 'TickLabelInterpreter', 'none');
     if showlabels(row)
         set(gca, 'xtick', data_x_filtered, 'xticklabel', data{data_x_filtered,1})
+    else
+        set(gca, 'xtick', [])
     end
     xtickangle(45);
     title(titles(row)); ylabel('log_{10}(|relative error|)');
