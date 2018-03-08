@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 
     InputReader reader {};
 
-    std::vector<float> results_decimal, results_float, results_posit;
+    std::vector<cpp_dec_float_50> results_decimal, results_float, results_posit;
 
     const long double initial_constant = ldexpf(1.0f, 100);
 
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     std::vector<Testcase> testcases = reader.from_file(argv[1]);
     for(Testcase testcase : testcases)
     {
-        float result;
+        cpp_dec_float_50 result;
 
         result = pairhmm_dec50.compute_full_prob(&testcase);
         results_decimal.push_back(result);

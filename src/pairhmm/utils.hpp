@@ -33,7 +33,8 @@ void printDebug(const char* format, ...) {
 #endif
 }
 
-void writeBenchmark(PairHMM<auto, auto>& pairhmm_dec50, PairHMM<auto, auto>& pairhmm_float, PairHMMPosit<auto, auto>& pairhmm_posit) {
+template<class DEC_TYPE>
+void writeBenchmark(PairHMM<DEC_TYPE, auto>& pairhmm_dec50, PairHMM<auto, auto>& pairhmm_float, PairHMMPosit<auto, auto>& pairhmm_posit) {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
     ofstream outfile("pairhmm_values.txt", ios::out|ios::app);
@@ -47,18 +48,16 @@ void writeBenchmark(PairHMM<auto, auto>& pairhmm_dec50, PairHMM<auto, auto>& pai
     outfile << "name,dE_f,dE_p,log(abs(dE_f)),log(abs(dE_p))" << endl;
     for(auto tup : boost::combine(names, dec_values, float_values, posit_values)) {
         string name;
-        cpp_dec_float_50 E, dE_f, dE_p;
-
-        float E_f;
-        posit<32,2> E_p;
+        DEC_TYPE E, dE_f, dE_p, E_f, E_p;
 
         boost::tie(name, E, E_f, E_p) = tup;
 
+        // Calculate relative errors compared to 50-decimal reference type
         if(E == 0) {
             dE_f = 0; dE_p = 0;
         } else {
             dE_f = (E_f - E) / E;
-            dE_p = (static_cast<long double>(E_p) - E) / E;
+            dE_p = (E_p - E) / E;
         }
 
         // Relative error values

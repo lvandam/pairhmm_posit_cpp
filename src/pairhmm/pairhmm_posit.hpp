@@ -9,12 +9,15 @@
 
 #include <cmath>
 #include <posit/posit>
+#include <boost/multiprecision/cpp_dec_float.hpp>
+
 #include "utils.hpp"
 #include "testcase.hpp"
 #include "debug_values.hpp"
 
 using namespace std;
 using namespace sw::unum;
+using boost::multiprecision::cpp_dec_float_50;
 
 void printDebug(const char* format, ...);
 
@@ -34,9 +37,9 @@ public:
 
     long double INITIAL_CONSTANT;
 
-    DebugValues<T> debug_values;
+    DebugValues<cpp_dec_float_50> debug_values;
 
-    float compute_full_prob(Testcase *testcase) {
+    cpp_dec_float_50 compute_full_prob(Testcase *testcase) {
         int r, c;
         int ROWS = testcase->read_size;
         int COLS = testcase->haplotype_size;
@@ -95,7 +98,7 @@ public:
         for (c = 0; c <= COLS; c++) {
             M[0][c] = 0;
             X[0][c] = 0;
-            Y[0][c] = INITIAL_CONSTANT / (float) (testcase->haplotype_size);
+            Y[0][c] = static_cast<T>(INITIAL_CONSTANT) / testcase->haplotype_size;
             debug_values.debugValue(Y[0][c], "Y[0][%d]", c);
         }
 
@@ -134,45 +137,56 @@ public:
             }
         }
 
+        QUIRE result_quire(0);
+
         for (r = 1; r <= ROWS; r++) {
             for (c = 1; c <= COLS; c++) {
                 QUIRE Mq(0), Xq(0), Yq(0);
-                posit<32,2> Mposit, Xposit, Yposit;
-                Mq += quire_mul(distm[r][c] * M[r - 1][c - 1], p[r][MM]);
-                Mq += quire_mul(distm[r][c] * X[r - 1][c - 1], p[r][GapM]);
-                Mq += quire_mul(distm[r][c] * Y[r - 1][c - 1], p[r][GapM]);
+                posit<32, 2> Mposit, Xposit, Yposit;
+
+                // Calculation of M[r][c]
+                value<2 * (32 - 2 - 2)> distm_M, distm_X, distm_Y;
+                module_multiply(distm[r][c].to_value(), M[r - 1][c - 1].to_value(), distm_M);
+                module_multiply(distm[r][c].to_value(), X[r - 1][c - 1].to_value(), distm_X);
+                module_multiply(distm[r][c].to_value(), Y[r - 1][c - 1].to_value(), distm_Y);
+
+                Mq += distm_M;
+                Mq += distm_X;
+                Mq += distm_Y;
+
                 Mposit.convert(Mq.to_value());
                 M[r][c] = Mposit;
 
                 debug_values.debugValue(M[r][c], "M[%d][%d]", r, c);
 
+                // Calculation of X[r][c]
                 Xq += quire_mul(M[r - 1][c], p[r][MX]);
                 Xq += quire_mul(X[r - 1][c], p[r][XX]);
+
                 Xposit.convert(Xq.to_value());
                 X[r][c] = Xposit;
 
                 debug_values.debugValue(X[r][c], "X[%d][%d]", r, c);
 
+                // Calculation of Y[r][c]
                 Yq += quire_mul(M[r][c - 1], p[r][MY]);
                 Yq += quire_mul(Y[r][c - 1], p[r][YY]);
                 Yposit.convert(Yq.to_value());
                 Y[r][c] = Yposit;
 
                 debug_values.debugValue(Y[r][c], "Y[%d][%d]", r, c);
+
+                if(r == ROWS) {
+                    result_quire += Mq.to_value();
+                    result_quire += Xq.to_value();
+                    cout << result_quire.to_value() << endl;
+                    debug_values.debugValue((cpp_dec_float_50)(result_quire.to_value()), "result[%d]", c);
+                }
             }
         }
 
-        printDebug("RESULT ACCUMULATION");
-        QUIRE quire(0);
-        for (c = 1; c <= COLS; c++) {
-            constexpr int bits = std::numeric_limits<long double>::digits - 1;
-            quire += M[ROWS][c].convert_to_scientific_notation();
-            quire += X[ROWS][c].convert_to_scientific_notation();
-            debug_values.debugValue(float(quire.to_value()), "result[%d]", c);
-        }
-
         // Convert back to float
-        return float(quire.to_value());
+        return cpp_dec_float_50(result_quire.to_value());
     }
 };
 

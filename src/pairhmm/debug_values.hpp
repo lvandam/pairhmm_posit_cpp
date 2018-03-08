@@ -29,8 +29,11 @@ private:
 public:
     DebugValues() = default;
 
-    void debugValue(T value, const char* format, ...) {
+    template<class Q>
+    void debugValue(Q val, const char* format, ...) {
         char buf[1024];
+
+        T value = static_cast<T>(val);
 
         va_list arglist;
         va_start(arglist, format);
