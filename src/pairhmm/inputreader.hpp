@@ -28,7 +28,7 @@ public:
         int read_size;
         input >> read_size;
 
-        printDebug("Number of reads: %d", read_size);
+        writeBenchmarkText("Number of reads: %d", read_size);
 
         std::vector<Testcase> testcases;
         testcases.reserve(read_size);

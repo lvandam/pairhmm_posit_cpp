@@ -19,8 +19,6 @@ using namespace std;
 using namespace sw::unum;
 using boost::multiprecision::cpp_dec_float_50;
 
-void printDebug(const char* format, ...);
-
 template<class T, class QUIRE>
 class PairHMMPosit {
 private:
@@ -35,7 +33,7 @@ public:
     explicit PairHMMPosit(long double initial_constant) : INITIAL_CONSTANT(initial_constant) {
     }
 
-    long double INITIAL_CONSTANT;
+    T INITIAL_CONSTANT;
 
     DebugValues<cpp_dec_float_50> debug_values;
 
@@ -51,13 +49,12 @@ public:
         std::vector<std::vector<T>> distm;
 
         // Initialize matrices
+        std::vector<T> row_m_x_y(350), row_p(6);
         for (int i = 0; i < 350; i++) {
-            std::vector<T> row_m_x_y(350);
             M.push_back(row_m_x_y);
             X.push_back(row_m_x_y);
             Y.push_back(row_m_x_y);
             distm.push_back(row_m_x_y);
-            std::vector<T> row_p(6);
             p.push_back(row_p);
         }
 
@@ -76,21 +73,17 @@ public:
             int score_con = testcase->gcp_quals[r - 1] & 127;
 
             p[r][MM] = 1.0f - score_to_probability((score_ins + score_del) & 127);
-            debug_values.debugValue(p[r][MM], "p[%d][MM]", r);
-
             p[r][GapM] = 0.9;
-            debug_values.debugValue(p[r][GapM], "p[%d][GapM]", r);
-
             p[r][MX] = score_to_probability(score_ins);
-            debug_values.debugValue(p[r][MX], "p[%d][MX]", r);
-
             p[r][XX] = 0.1;
-            debug_values.debugValue(p[r][XX], "p[%d][XX]", r);
-
             p[r][MY] = score_to_probability(score_ins);
-            debug_values.debugValue(p[r][MY], "p[%d][MY]", r);
-
             p[r][YY] = 0.1;
+
+            debug_values.debugValue(p[r][MM], "p[%d][MM]", r);
+            debug_values.debugValue(p[r][GapM], "p[%d][GapM]", r);
+            debug_values.debugValue(p[r][MX], "p[%d][MX]", r);
+            debug_values.debugValue(p[r][XX], "p[%d][XX]", r);
+            debug_values.debugValue(p[r][MY], "p[%d][MY]", r);
             debug_values.debugValue(p[r][YY], "p[%d][YY]", r);
         }
 
@@ -99,6 +92,7 @@ public:
             M[0][c] = 0;
             X[0][c] = 0;
             Y[0][c] = static_cast<T>(INITIAL_CONSTANT) / testcase->haplotype_size;
+
             debug_values.debugValue(Y[0][c], "Y[0][%d]", c);
         }
 
@@ -106,34 +100,32 @@ public:
         for (r = 1; r <= ROWS; r++) {
             M[r][0] = 0;
             X[r][0] = X[r - 1][0] * p[r - 1][XX];
-            debug_values.debugValue(X[r][0], "X[%d][0]", r);
             Y[r][0] = 0;
+
+            debug_values.debugValue(X[r][0], "X[%d][0]", r);
         }
 
         for (r = 1; r <= ROWS; r++) {
             for (c = 1; c <= COLS; c++) {
-                printDebug(">> [r,c] = %d,%d", r, c);
-
                 char _rs = testcase->read_base[r - 1];
-                debug_values.debugValue(_rs, "_rs");
-
                 char _hap = testcase->haplotype_base[c - 1];
-                debug_values.debugValue(_hap, "_hap");
-
                 int score_base = testcase->base_quals[r - 1] & 127;
-                debug_values.debugValue(score_base, "score_base");
 
                 distm[r][c] = score_to_probability(score_base);
-                debug_values.debugValue(distm[r][c], "distm[%d][%d]", r, c);
 
                 if (_rs == _hap || _rs == 'N' || _hap == 'N') {
                     distm[r][c] = 1 - distm[r][c];
                 } else {
                     distm[r][c] = distm[r][c] / 3;
                 }
-                debug_values.debugValue(distm[r][c], "distm_after[%d][%d]", r, c);
 
-                printDebug("");
+                debug_values.printDebug(">> [r,c] = %d,%d", r, c);
+                debug_values.debugValue(_rs, "_rs");
+                debug_values.debugValue(_hap, "_hap");
+                debug_values.debugValue(score_base, "score_base");
+                debug_values.debugValue(distm[r][c], "distm[%d][%d]", r, c);
+                debug_values.debugValue(distm[r][c], "distm_after[%d][%d]", r, c);
+                debug_values.printDebug("");
             }
         }
 
@@ -157,8 +149,6 @@ public:
                 Mposit.convert(Mq.to_value());
                 M[r][c] = Mposit;
 
-                debug_values.debugValue(M[r][c], "M[%d][%d]", r, c);
-
                 // Calculation of X[r][c]
                 Xq += quire_mul(M[r - 1][c], p[r][MX]);
                 Xq += quire_mul(X[r - 1][c], p[r][XX]);
@@ -166,20 +156,20 @@ public:
                 Xposit.convert(Xq.to_value());
                 X[r][c] = Xposit;
 
-                debug_values.debugValue(X[r][c], "X[%d][%d]", r, c);
-
                 // Calculation of Y[r][c]
                 Yq += quire_mul(M[r][c - 1], p[r][MY]);
                 Yq += quire_mul(Y[r][c - 1], p[r][YY]);
                 Yposit.convert(Yq.to_value());
                 Y[r][c] = Yposit;
 
+                debug_values.debugValue(M[r][c], "M[%d][%d]", r, c);
+                debug_values.debugValue(X[r][c], "X[%d][%d]", r, c);
                 debug_values.debugValue(Y[r][c], "Y[%d][%d]", r, c);
 
+                // Result accumulation
                 if(r == ROWS) {
                     result_quire += Mq.to_value();
                     result_quire += Xq.to_value();
-                    cout << result_quire.to_value() << endl;
                     debug_values.debugValue((cpp_dec_float_50)(result_quire.to_value()), "result[%d]", c);
                 }
             }

@@ -50,6 +50,19 @@ public:
 #endif
     }
 
+    void printDebug(const char* format, ...) {
+#ifdef DEBUG_VERBOSE
+        char buf[1024];
+
+        va_list arglist;
+        va_start(arglist, format);
+        vsprintf(buf, format, arglist);
+        va_end(arglist);
+
+        cout << fixed << setprecision(DEBUG_PRECISION) << buf << endl;
+#endif
+    }
+
     void printDebugValues() {
         for(auto el : items) {
             cout << setw(20) << el.name << " = " << fixed << setprecision(DEBUG_PRECISION) << el.value << endl;

@@ -20,8 +20,7 @@ using boost::multiprecision::cpp_dec_float_50;
 
 using namespace std;
 
-void printDebug(const char* format, ...) {
-#ifdef DEBUG_VERBOSE
+void writeBenchmarkText(const char *format, ...) {
     char buf[1024];
 
     va_list arglist;
@@ -29,8 +28,9 @@ void printDebug(const char* format, ...) {
     vsprintf(buf, format, arglist);
     va_end(arglist);
 
-    cout << fixed << setprecision(DEBUG_PRECISION) << buf << endl;
-#endif
+    ofstream outfile("pairhmm_values.txt", ios::out|ios::app);
+    outfile << buf << endl;
+    outfile.close();
 }
 
 template<class DEC_TYPE>
