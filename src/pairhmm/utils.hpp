@@ -16,9 +16,8 @@
 #include "pairhmm.hpp"
 #include "pairhmm_posit.hpp"
 
-using boost::multiprecision::cpp_dec_float_50;
-
 using namespace std;
+using boost::multiprecision::cpp_dec_float_50;
 
 void writeBenchmarkText(const char *format, ...) {
     char buf[1024];
@@ -33,12 +32,20 @@ void writeBenchmarkText(const char *format, ...) {
     outfile.close();
 }
 
-template<class DEC_TYPE>
-void writeBenchmark(PairHMM<DEC_TYPE, auto>& pairhmm_dec50, PairHMM<auto, auto>& pairhmm_float, PairHMMPosit<auto, auto>& pairhmm_posit) {
+void writeBenchmark(PairHMM<auto, auto>& pairhmm_dec50, PairHMM<auto, auto>& pairhmm_float, PairHMMPosit<auto, auto>& pairhmm_posit, std::string filename = "pairhmm_values.txt", bool printDate = true, bool overwrite = false) {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
-    ofstream outfile("pairhmm_values.txt", ios::out|ios::app);
-    outfile << endl << put_time(&tm, "%d-%m-%Y %H:%M:%S") << endl << "===================" << endl;
+
+    ofstream outfile;
+    if(overwrite) {
+        outfile = ofstream(filename, ios::out);
+    }
+    else {
+        outfile = ofstream(filename, ios::out|ios::app);
+    }
+
+    if(printDate)
+        outfile << endl << put_time(&tm, "%d-%m-%Y %H:%M:%S") << endl << "===================" << endl;
 
     auto names = pairhmm_dec50.debug_values.getNames();
     auto dec_values = pairhmm_dec50.debug_values.getValues();
@@ -48,11 +55,10 @@ void writeBenchmark(PairHMM<DEC_TYPE, auto>& pairhmm_dec50, PairHMM<auto, auto>&
     outfile << "name,dE_f,dE_p,log(abs(dE_f)),log(abs(dE_p))" << endl;
     for(auto tup : boost::combine(names, dec_values, float_values, posit_values)) {
         string name;
-        DEC_TYPE E, dE_f, dE_p, E_f, E_p;
+        cpp_dec_float_50 E, dE_f, E_f, dE_p, E_p;
 
         boost::tie(name, E, E_f, E_p) = tup;
 
-        // Calculate relative errors compared to 50-decimal reference type
         if(E == 0) {
             dE_f = 0; dE_p = 0;
         } else {

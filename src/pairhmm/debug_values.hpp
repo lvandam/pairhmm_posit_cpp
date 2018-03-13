@@ -13,15 +13,17 @@
 #include <vector>
 #include <ctime>
 #include "config.hpp"
+#include <boost/multiprecision/cpp_dec_float.hpp>
 
 using namespace std;
+using boost::multiprecision::cpp_dec_float_50;
 
 template<class T>
 class DebugValues {
 private:
     struct Entry {
         char name[1024];
-        T value;
+        cpp_dec_float_50 value;
     };
 
     std::vector<Entry> items;
@@ -29,11 +31,8 @@ private:
 public:
     DebugValues() = default;
 
-    template<class Q>
-    void debugValue(Q val, const char* format, ...) {
+    void debugValue(T value, const char* format, ...) {
         char buf[1024];
-
-        T value = static_cast<T>(val);
 
         va_list arglist;
         va_start(arglist, format);
@@ -42,24 +41,12 @@ public:
 
         Entry entry;
         strcpy(entry.name, buf);
-        entry.value = value;
+
+        entry.value = static_cast<cpp_dec_float_50>(value);
         items.push_back(entry);
 
 #ifdef DEBUG_VALUES
         cout << buf << " = " << fixed << setprecision(DEBUG_PRECISION) << value << endl;
-#endif
-    }
-
-    void printDebug(const char* format, ...) {
-#ifdef DEBUG_VERBOSE
-        char buf[1024];
-
-        va_list arglist;
-        va_start(arglist, format);
-        vsprintf(buf, format, arglist);
-        va_end(arglist);
-
-        cout << fixed << setprecision(DEBUG_PRECISION) << buf << endl;
 #endif
     }
 
@@ -90,8 +77,8 @@ public:
         return result;
     }
 
-    std::vector<T> getValues() {
-        std::vector<T> result;
+    std::vector<cpp_dec_float_50> getValues() {
+        std::vector<cpp_dec_float_50> result;
         for(auto el : items) {
             result.push_back(el.value);
         }

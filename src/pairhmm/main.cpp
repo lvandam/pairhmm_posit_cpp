@@ -28,15 +28,17 @@ typedef sw::unum::quire<32, 8> QuireFloat;
 typedef sw::unum::quire<80, 15> QuireDecimal50;
 typedef sw::unum::quire<POSIT_NBITS, POSIT_EBITS> QuirePosit;
 
+const std::vector<int> initial_constant_powers = {100, 50};
+
 int main(int argc, char *argv[]) {
     cout.precision(50);
     cout.flags(cout.fixed);
 
-    std::vector<int> initial_constant_powers = {100, 50, 20, 10, 5, 2, 1};
-
-    for(auto initial_constant_power : initial_constant_powers) {
+    for(auto initial_constant_power: initial_constant_powers) {
         InputReader reader {};
+
         std::vector<cpp_dec_float_50> results_decimal, results_float, results_posit;
+
         const long double initial_constant = ldexpf(1.0f, initial_constant_power);
 
         PairHMM<cpp_dec_float_50, QuireDecimal50> pairhmm_dec50(initial_constant);
@@ -65,8 +67,7 @@ int main(int argc, char *argv[]) {
             pairhmm_posit.debug_values.exportDebugValues("pairhmm_posit.txt");
 
             // For benchmarking (print without labels)
-            writeBenchmarkText("\n\n-- Initial constant: 2^%d", initial_constant_power);
-            writeBenchmark(pairhmm_dec50, pairhmm_float, pairhmm_posit);
+            writeBenchmark(pairhmm_dec50, pairhmm_float, pairhmm_posit, std::to_string(initial_constant_power)+".txt", false, true);
 
 //        pairhmm_dec50.debug_values.printDebugValues();
 //        pairhmm_float.debug_values.printDebugValues();
@@ -77,4 +78,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
