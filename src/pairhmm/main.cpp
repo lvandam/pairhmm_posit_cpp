@@ -28,7 +28,7 @@ typedef sw::unum::quire<32, 8> QuireFloat;
 typedef sw::unum::quire<80, 15> QuireDecimal50;
 typedef sw::unum::quire<POSIT_NBITS, POSIT_EBITS> QuirePosit;
 
-const std::vector<int> initial_constant_powers = {100, 50};
+const std::vector<int> initial_constant_powers = {100, 50, 20, 10, 5, 2, 1};
 
 int main(int argc, char *argv[]) {
     cout.precision(50);
