@@ -10,11 +10,14 @@ for initial_constant = initial_constants
 
     % 32_data
     main_title = ['Dataset = 32\_data.txt - Initial constant = 2^{' num2str(initial_constant) '}'];
-    regions = [1 datalength; 4543 4638; 4543 4638; 7039 7134; 7135 datalength]; % start and end indices of each region
+    regions = [1 datalength; 1 datalength; 1 datalength; 1 datalength; 1 datalength]; % start and end indices of each region
     titles = ["All intermediate values", "M[1][c]", "Y[1][c]", "M[27], X[27], Y[27]", "Result Accumulation"]; % region labels
     showlabels = [false, true, true, true, true]; % toggle X-axis variable names for each region
     wide = [true, false, false, true, true]; % horizontally wide plot for region
-    filter_text = ["", "M", "Y", "", ""]; % filtered based on the first (name) column
+    
+    filter_text1 = ["",     "M[1]", "Y[1]", "M[27]", "result"]; % filtered based on the first (name) column
+    filter_text2 = ["NONE", "NONE", "NONE", "X[27]", "NONE"];
+    filter_text3 = ["NONE", "NONE", "NONE", "Y[27]", "NONE"];
 
     % 1_data
     % main_title = 'Dataset = 1\_data.txt - Initial constant = 2^{1}';
@@ -22,7 +25,9 @@ for initial_constant = initial_constants
     % titles = ["All intermediate values"]; % region labels
     % showlabels = [true]; % toggle X-axis variable names for each region
     % wide = [true]; % horizontally wide plot for region
-    % filter_text = [""]; % filtered based on the first (name) column
+    % filter_text1 = ["NONE"]; % filtered based on the first (name) column
+    % filter_text2 = ["NONE"];
+    % filter_text3 = ["NONE"];
 
     % Process
     wide_count = nnz(wide == true);
@@ -67,12 +72,17 @@ for initial_constant = initial_constants
         hold on
 
         % Match with any given filter (start string)
-        if filter_text(row) == ""
+        if filter_text1(row) == ""
             data_x_filtered = find(ones(datalength,1) >= 0);
             data_matching = data_x_filtered >= start_idx & data_x_filtered <= end_idx;
             data_x_filtered = find(data_matching);
         else
-            data_matching1 = strncmp(data{:,1}, filter_text(row), length(filter_text(row)));
+            data_matching1_1 = strncmp(data{:,1}, filter_text1(row), strlength(filter_text1(row)));
+            data_matching1_2 = strncmp(data{:,1}, filter_text2(row), strlength(filter_text2(row)));
+            data_matching1_3 = strncmp(data{:,1}, filter_text3(row), strlength(filter_text3(row)));
+            
+            data_matching1 = data_matching1_1 | data_matching1_2 | data_matching1_3;
+                        
             data_x_filtered = find(data_matching1 >= 0);
             data_matching2 = data_x_filtered >= start_idx & data_x_filtered <= end_idx;
             data_matching = data_matching1 .* data_matching2;
