@@ -141,8 +141,11 @@ public:
                 posit<32, 2> Mposit, Xposit, Yposit;
 
                 // Calculation of M[r][c]
-                value<2 * (32 - 2 - 2)> distm_M, distm_X, distm_Y, pMM, pGapM;
-                value<4 * (32 - 2) - 6> resM, resX, resY;
+                const int bits = 2 * POSIT_FBITS + 2;
+                const int bits_mul = 2 * bits + 2;
+
+                value<bits> distm_M, distm_X, distm_Y, pMM, pGapM;
+                value<bits_mul> resM, resX, resY;
 
                 module_multiply(distm[r][c].to_value(), M[r - 1][c - 1].to_value(), distm_M);
                 module_multiply(distm[r][c].to_value(), X[r - 1][c - 1].to_value(), distm_X);

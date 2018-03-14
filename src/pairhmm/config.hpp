@@ -17,6 +17,7 @@
 
 #define POSIT_NBITS 32
 #define POSIT_EBITS 2
+#define POSIT_FBITS (POSIT_NBITS - 3 - POSIT_EBITS)
 
 using namespace std;
 using boost::multiprecision::cpp_dec_float_50;

@@ -15,6 +15,7 @@
 #include "config.hpp"
 #include "pairhmm.hpp"
 #include "pairhmm_posit.hpp"
+#include "pairhmm_decimal.hpp"
 
 using namespace std;
 using boost::multiprecision::cpp_dec_float_50;
@@ -32,7 +33,7 @@ void writeBenchmarkText(const char *format, ...) {
     outfile.close();
 }
 
-void writeBenchmark(PairHMM<auto, auto>& pairhmm_dec50, PairHMM<auto, auto>& pairhmm_float, PairHMMPosit<auto, auto>& pairhmm_posit, std::string filename = "pairhmm_values.txt", bool printDate = true, bool overwrite = false) {
+void writeBenchmark(PairHMMDecimal<auto>& pairhmm_dec50, PairHMM<auto, auto>& pairhmm_float, PairHMMPosit<auto, auto>& pairhmm_posit, std::string filename = "pairhmm_values.txt", bool printDate = true, bool overwrite = false) {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
 

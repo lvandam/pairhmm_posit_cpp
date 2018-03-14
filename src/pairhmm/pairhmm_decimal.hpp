@@ -1,11 +1,11 @@
 /**
     @author Laurens van Dam
-    @date 27/02/2018
+    @date 14/03/2018
     @copyright 2018 All rights reserved.
 **/
 
-#ifndef PAIRHMM_PAIRHMM_HPP
-#define PAIRHMM_PAIRHMM_HPP
+#ifndef PAIRHMM_PAIRHMM_DECIMAL_HPP
+#define PAIRHMM_PAIRHMM_DECIMAL_HPP
 
 #include <cmath>
 #include <posit/posit>
@@ -20,18 +20,18 @@ using boost::multiprecision::cpp_dec_float_50;
 
 void writeBenchmarkText(const char *format, ...);
 
-template<class T, class QUIRE>
-class PairHMM {
+template<class T>
+class PairHMMDecimal {
 private:
     static T score_to_probability(int Q) {
         return powl(10.f, -((long double) Q) / 10.f);
     }
 
 public:
-    PairHMM() : INITIAL_CONSTANT(ldexpf(1.f, 100)) {
+    PairHMMDecimal() : INITIAL_CONSTANT(ldexpf(1.f, 100)) {
     }
 
-    explicit PairHMM(long double initial_constant) : INITIAL_CONSTANT(initial_constant) {
+    explicit PairHMMDecimal(long double initial_constant) : INITIAL_CONSTANT(initial_constant) {
     }
 
     long double INITIAL_CONSTANT;
@@ -134,71 +134,27 @@ public:
             }
         }
 
-        constexpr int bits = std::numeric_limits<T>::digits - 1;
-
-        QUIRE result_quire(0);
+        T result;
         for (r = 1; r <= ROWS; r++) {
             for (c = 1; c <= COLS; c++) {
-                QUIRE Mq(0), Xq(0), Yq(0);
-
-                const int bits_mult = bits * 2 + 2;
-                const int bits_mult_mult = bits_mult * 2 + 2;
-
-                // Calculation of M[r][c]
-                value<bits_mult> distm_M, distm_X, distm_Y, pMM, pGapM;
-                value<bits_mult_mult> resM, resX, resY;
-
-                module_multiply<bits, bits_mult>(value<bits>(distm[r][c]), value<bits>(M[r - 1][c - 1]), distm_M);
-                module_multiply<bits, bits_mult>(value<bits>(distm[r][c]), value<bits>(X[r - 1][c - 1]), distm_X);
-                module_multiply<bits, bits_mult>(value<bits>(distm[r][c]), value<bits>(Y[r - 1][c - 1]), distm_Y);
-
-                module_multiply<bits_mult, bits_mult_mult>(distm_M, value<bits_mult>(p[r][MM]), resM);
-                module_multiply<bits_mult, bits_mult_mult>(distm_X, value<bits_mult>(p[r][GapM]), resX);
-                module_multiply<bits_mult, bits_mult_mult>(distm_Y, value<bits_mult>(p[r][GapM]), resY);
-
-                Mq += resM;
-                Mq += resX;
-                Mq += resY;
-
-                M[r][c] = static_cast<T>(Mq.to_value());
-
-                // Calculation of X[r][c]
-                value<bits_mult> M_p_MX, X_p_XX;
-                module_multiply<bits, bits_mult>(value<bits>(M[r - 1][c]), value<bits>(p[r][MX]), M_p_MX);
-                module_multiply<bits, bits_mult>(value<bits>(X[r - 1][c]), value<bits>(p[r][XX]), X_p_XX);
-
-                Xq += M_p_MX;
-                Xq += X_p_XX;
-
-                X[r][c] = static_cast<T>(Xq.to_value());
-
-                // Calculation of Y[r][c]
-                value<bits_mult> M_p_MY, Y_p_YY;
-                module_multiply<bits, bits_mult>(value<bits>(M[r][c - 1]), value<bits>(p[r][MY]), M_p_MY);
-                module_multiply<bits, bits_mult>(value<bits>(Y[r][c - 1]), value<bits>(p[r][YY]), Y_p_YY);
-
-                Yq += M_p_MY;
-                Yq += Y_p_YY;
-
-                Y[r][c] = static_cast<T>(Yq.to_value());
-
+                M[r][c] = distm[r][c] * (M[r - 1][c - 1] * p[r][MM] + X[r - 1][c - 1] * p[r][GapM] + Y[r - 1][c - 1] * p[r][GapM]);
                 debug_values.debugValue(M[r][c], "M[%d][%d]", r, c);
+
+                X[r][c] = M[r - 1][c] * p[r][MX] + X[r - 1][c] * p[r][XX];
                 debug_values.debugValue(X[r][c], "X[%d][%d]", r, c);
+
+                Y[r][c] = M[r][c - 1] * p[r][MY] + Y[r][c - 1] * p[r][YY];
                 debug_values.debugValue(Y[r][c], "Y[%d][%d]", r, c);
 
-                // Result accumulation
                 if(r == ROWS) {
-                    result_quire += Mq.to_value();
-                    result_quire += Xq.to_value();
-
-                    debug_values.debugValue((T)result_quire.to_value(), "result[%d]", c);
+                    result += M[ROWS][c] + X[ROWS][c];
+                    debug_values.debugValue(result, "result[%d]", c);
                 }
             }
         }
 
-        // Convert back to decimal50
-        return cpp_dec_float_50(result_quire.to_value());
+        return cpp_dec_float_50(result);
     }
 };
 
-#endif //PAIRHMM_PAIRHMM_HPP
+#endif //PAIRHMM_PAIRHMM_DECIMAL_HPP

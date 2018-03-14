@@ -16,6 +16,7 @@
 #include "inputreader.hpp"
 #include "pairhmm.hpp"
 #include "pairhmm_posit.hpp"
+#include "pairhmm_decimal.hpp"
 #include "utils.hpp"
 
 using namespace std;
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]) {
 
         const long double initial_constant = ldexpf(1.0f, initial_constant_power);
 
-        PairHMM<cpp_dec_float_50, QuireDecimal50> pairhmm_dec50(initial_constant);
+        PairHMMDecimal<cpp_dec_float_50> pairhmm_dec50(initial_constant);
         PairHMM<float, QuireFloat> pairhmm_float(initial_constant);
         PairHMMPosit<Posit, QuirePosit> pairhmm_posit(initial_constant);
 
