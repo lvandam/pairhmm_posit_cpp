@@ -47,17 +47,26 @@ void writeBenchmark(PairHMM<auto, auto>& pairhmm_dec50, PairHMM<auto, auto>& pai
     if(printDate)
         outfile << endl << put_time(&tm, "%d-%m-%Y %H:%M:%S") << endl << "===================" << endl;
 
-    auto names = pairhmm_dec50.debug_values.getNames();
-    auto dec_values = pairhmm_dec50.debug_values.getValues();
-    auto float_values = pairhmm_float.debug_values.getValues();
-    auto posit_values = pairhmm_posit.debug_values.getValues();
+    auto dec_values = pairhmm_dec50.debug_values.items;
+    auto float_values = pairhmm_float.debug_values.items;
+    auto posit_values = pairhmm_posit.debug_values.items;
 
-    outfile << "name,dE_f,dE_p,log(abs(dE_f)),log(abs(dE_p))" << endl;
-    for(auto tup : boost::combine(names, dec_values, float_values, posit_values)) {
-        string name;
-        cpp_dec_float_50 E, dE_f, E_f, dE_p, E_p;
+    outfile << "name,dE_f,dE_p,log(abs(dE_f)),log(abs(dE_p)),E,E_f,E_p" << endl;
+    for(int i = 0; i < dec_values.size(); i++) {
+        cpp_dec_float_50 E, E_f, E_p, dE_f, dE_p;
 
-        boost::tie(name, E, E_f, E_p) = tup;
+        string name = dec_values[i].name;
+        E = dec_values[i].value;
+
+        auto E_f_entry = std::find_if(float_values.begin(), float_values.end(), find_entry(name));
+        E_f = E_f_entry->value;
+
+        auto E_p_entry = std::find_if(posit_values.begin(), posit_values.end(), find_entry(name));
+        E_p = E_p_entry->value;
+
+        if(name != E_f_entry->name || name != E_p_entry->name) {
+            cout << "Error: mismatching names!" << endl;
+        }
 
         if(E == 0) {
             dE_f = 0; dE_p = 0;
@@ -67,7 +76,7 @@ void writeBenchmark(PairHMM<auto, auto>& pairhmm_dec50, PairHMM<auto, auto>& pai
         }
 
         // Relative error values
-        outfile << setprecision(50) << fixed << name <<","<< dE_f <<","<< dE_p <<","<< log10(abs(dE_f)) <<","<< log10(abs(dE_p)) << endl;
+        outfile << setprecision(50) << fixed << name <<","<< dE_f <<","<< dE_p <<","<< log10(abs(dE_f)) <<","<< log10(abs(dE_p)) <<","<< E <<","<< E_f <<","<< E_p << endl;
     }
     outfile.close();
 }

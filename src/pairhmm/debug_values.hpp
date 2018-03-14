@@ -20,15 +20,9 @@ using boost::multiprecision::cpp_dec_float_50;
 
 template<class T>
 class DebugValues {
-private:
-    struct Entry {
-        char name[1024];
-        cpp_dec_float_50 value;
-    };
-
+public:
     std::vector<Entry> items;
 
-public:
     DebugValues() = default;
 
     void debugValue(T value, const char* format, ...) {
@@ -40,7 +34,7 @@ public:
         va_end(arglist);
 
         Entry entry;
-        strcpy(entry.name, buf);
+        entry.name = string(buf);
 
         entry.value = static_cast<cpp_dec_float_50>(value);
         items.push_back(entry);

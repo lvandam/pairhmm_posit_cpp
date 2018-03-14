@@ -12,21 +12,14 @@
 #include <float/quire.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
+#include "config.hpp"
 #include "inputreader.hpp"
 #include "pairhmm.hpp"
 #include "pairhmm_posit.hpp"
 #include "utils.hpp"
 
-#define POSIT_NBITS 32
-#define POSIT_EBITS 2
-
 using namespace std;
 using boost::multiprecision::cpp_dec_float_50;
-
-typedef sw::unum::posit<POSIT_NBITS, POSIT_EBITS> Posit;
-typedef sw::unum::quire<32, 8> QuireFloat;
-typedef sw::unum::quire<80, 15> QuireDecimal50;
-typedef sw::unum::quire<POSIT_NBITS, POSIT_EBITS> QuirePosit;
 
 const std::vector<int> initial_constant_powers = {100, 50, 20, 10, 5, 2, 1};
 
