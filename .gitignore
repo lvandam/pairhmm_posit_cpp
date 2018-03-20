@@ -12,3 +12,4 @@ cmake-build-debug
 build
 *.out
 .DS_Store
+*.m~

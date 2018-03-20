@@ -14,29 +14,31 @@ for initial_constant = initial_constants
     % Config (define different regions that should be plotted individually)
 
     % 32_data
-%     set_name = '32_data';
-%     main_title = ['Dataset = ' strrep(set_name, '_', '\_') ' - Initial constant = 2^{' num2str(initial_constant) '}' newline 'git commit ' git_hash_string ' / ' git_branch_name];
-%     pngname = set_name+"_"+git_hash_string+"-"+git_branch_name+"_const"+num2str(initial_constant);
-%     regions = [1 datalength; 1 datalength; 1 datalength; 1 datalength; 1 datalength; 1 datalength]; % start and end indices of each region
-%     titles = ["All intermediate values", "Phred scores", "M[1][c]", "Y[1][c]", "M[27], X[27], Y[27]", "Result Accumulation"]; % region labels
-%     showlabels = [false, true, true, true, true, true]; % toggle X-axis variable names for each region
-%     wide = [true, true, false, false, true, true]; % horizontally wide plot for region
-%     
-%     filter_text1 = ["",     "p",    "M[1]", "Y[1]", "M[27]", "result"]; % filtered based on the first (name) column
-%     filter_text2 = ["NONE", "NONE", "NONE", "NONE", "X[27]", "NONE"];
-%     filter_text3 = ["NONE", "NONE", "NONE", "NONE", "Y[27]", "NONE"];
-
-    % 1_data
-    set_name = '1_data';
+    set_name = '32_data';
     main_title = ['Dataset = ' strrep(set_name, '_', '\_') ' - Initial constant = 2^{' num2str(initial_constant) '}' newline 'git commit ' git_hash_string ' / ' git_branch_name];
     pngname = set_name+"_"+git_hash_string+"-"+git_branch_name+"_const"+num2str(initial_constant);
-    regions = [1 datalength]; % start and end indices of each region
-    titles = ["All intermediate values"]; % region labels
-    showlabels = [true]; % toggle X-axis variable names for each region
-    wide = [true]; % horizontally wide plot for region
-    filter_text1 = [""]; % filtered based on the first (name) column
-    filter_text2 = ["NONE"];
-    filter_text3 = ["NONE"];
+    regions = [1 datalength; 1 datalength; 1 datalength; 1 datalength; 1 datalength; 1 datalength]; % start and end indices of each region
+    titles = ["All intermediate values", "Phred scores", "M[1][c]", "Y[1][c]", "M[27], X[27], Y[27]", "Result Accumulation"]; % region labels
+    showlabels = [false, true, true, true, true, true]; % toggle X-axis variable names for each region
+    wide = [true, true, false, false, true, true]; % horizontally wide plot for region
+    
+    filter_text1 = ["",     "p",    "M[1]", "Y[1]", "M[27]", "result"]; % filtered based on the first (name) column
+    filter_text2 = ["NONE", "NONE", "NONE", "NONE", "X[27]", "NONE"];
+    filter_text3 = ["NONE", "NONE", "NONE", "NONE", "Y[27]", "NONE"];
+    decimal_accuracy = false;
+
+    % 1_data
+%     set_name = '1_data';
+%     main_title = ['Dataset = ' strrep(set_name, '_', '\_') ' - Initial constant = 2^{' num2str(initial_constant) '}' newline 'git commit ' git_hash_string ' / ' git_branch_name];
+%     pngname = set_name+"_"+git_hash_string+"-"+git_branch_name+"_const"+num2str(initial_constant);
+%     regions = [1 datalength]; % start and end indices of each region
+%     titles = ["All intermediate values"]; % region labels
+%     showlabels = [true]; % toggle X-axis variable names for each region
+%     wide = [true]; % horizontally wide plot for region
+%     filter_text1 = [""]; % filtered based on the first (name) column
+%     filter_text2 = ["NONE"];
+%     filter_text3 = ["NONE"];
+%     decimal_accuracy = false;
 
     % Process
     wide_count = nnz(wide == true);
@@ -98,11 +100,16 @@ for initial_constant = initial_constants
             data_x_filtered = find(data_matching);
         end
 
-        data_float_filtered = data{data_x_filtered, 4};
-        data_posit_filtered = data{data_x_filtered, 5};
+        if decimal_accuracy
+            data_float_filtered = data{data_x_filtered, 9};
+            data_posit_filtered = data{data_x_filtered, 10};
+        else
+            data_float_filtered = data{data_x_filtered, 4};
+            data_posit_filtered = data{data_x_filtered, 5};
+        end
 
-        scatter(data_x_filtered, data_float_filtered, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'b', 'MarkerFaceAlpha', .7) % float %data{start_idx:end_idx,4},
-        scatter(data_x_filtered, data_posit_filtered, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'r', 'MarkerFaceAlpha', .7) % posit<32,2> %data{start_idx:end_idx,5},
+        scatter(data_x_filtered, data_float_filtered, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'b', 'MarkerFaceAlpha', .7) % float
+        scatter(data_x_filtered, data_posit_filtered, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'r', 'MarkerFaceAlpha', .7) % posit
         legend({'float', 'posit<32,2>'});
         grid on; grid minor;
         set(gca, 'TickLabelInterpreter', 'none');
@@ -112,7 +119,13 @@ for initial_constant = initial_constants
             set(gca, 'xtick', [])
         end
         xtickangle(45);
-        title(titles(row)); ylabel('log_{10}(|relative error|)');
+        title(titles(row));
+        
+        if decimal_accuracy
+            ylabel('decimal accuracy');
+        else
+            ylabel('log_{10}(|relative error|)');
+        end
     end
 
     p = mtit(main_title, 'FontSize', 14, 'Color', 'r', 'XOff', 0, 'YOff', .025);
