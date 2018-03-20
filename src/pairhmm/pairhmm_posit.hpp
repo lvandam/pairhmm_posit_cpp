@@ -89,24 +89,6 @@ public:
             debug_values.debugValue(p[r][YY], "p[%d][YY]", r);
         }
 
-        // Initialize first row of every column
-        for (c = 0; c <= COLS; c++) {
-            M[0][c] = 0;
-            X[0][c] = 0;
-            Y[0][c] = static_cast<T>(INITIAL_CONSTANT) / testcase->haplotype_size;
-
-            debug_values.debugValue(Y[0][c], "Y[0][%d]", c);
-        }
-
-        // Initialize first column of every row
-        for (r = 1; r <= ROWS; r++) {
-            M[r][0] = 0;
-            X[r][0] = X[r - 1][0] * p[r - 1][XX];
-            Y[r][0] = 0;
-
-            debug_values.debugValue(X[r][0], "X[%d][0]", r);
-        }
-
         for (r = 1; r <= ROWS; r++) {
             for (c = 1; c <= COLS; c++) {
                 writeBenchmarkText(">> [r,c] = %d,%d", r, c);
@@ -134,9 +116,38 @@ public:
             }
         }
 
+        T Mc(0), Md(0);
+        T Xc(0), Xd(0);
+        T Yc(0), Yd(0);
+
+        std::vector<T> Ml, Mu, Xu, Yl, Yu;
+        Ml.reserve(COLS+2); Mu.reserve(COLS+1);
+        Xu.reserve(COLS+1);
+        Yl.reserve(COLS+2); Yu.reserve(COLS+1);
+
+        for (c = 0; c <= COLS; c++) {
+            Mu[c] = 0;
+            Xu[c] = 0;
+            Yu[c] = static_cast<T>(INITIAL_CONSTANT) / testcase->haplotype_size;
+            debug_values.debugValue(Yu[c], "Y[0][%d]", c);
+        }
+
+        for (r = 1; r <= ROWS; r++) {
+            Ml[1] = 0;
+            Yl[1] = 0;
+            debug_values.debugValue(0, "X[%d][0]", r);
+        }
+
+        Yd = static_cast<T>(INITIAL_CONSTANT) / testcase->haplotype_size;
+        debug_values.debugValue(Yd, "Y[0][0]", c);
+
         QUIRE result_quire(0);
         for (r = 1; r <= ROWS; r++) {
             for (c = 1; c <= COLS; c++) {
+//                Mc = distm[r][c] * (Md * p[r][MM] + Xd * p[r][GapM] + Yd * p[r][GapM]);
+//                Xc = Mu[c] * p[r][MX] + Xu[c] * p[r][XX];
+//                Yc = Ml[c] * p[r][MY] + Yl[c] * p[r][YY];
+
                 QUIRE Mq(0), Xq(0), Yq(0);
                 posit<32, 2> Mposit, Xposit, Yposit;
 
@@ -147,9 +158,9 @@ public:
                 value<bits> distm_M, distm_X, distm_Y, pMM, pGapM;
                 value<bits_mul> resM, resX, resY;
 
-                module_multiply(distm[r][c].to_value(), M[r - 1][c - 1].to_value(), distm_M);
-                module_multiply(distm[r][c].to_value(), X[r - 1][c - 1].to_value(), distm_X);
-                module_multiply(distm[r][c].to_value(), Y[r - 1][c - 1].to_value(), distm_Y);
+                module_multiply(distm[r][c].to_value(), Md.to_value(), distm_M);
+                module_multiply(distm[r][c].to_value(), Xd.to_value(), distm_X);
+                module_multiply(distm[r][c].to_value(), Yd.to_value(), distm_Y);
 
                 p[r][MM].normalize_to(pMM);
                 p[r][GapM].normalize_to(pGapM);
@@ -162,25 +173,34 @@ public:
                 Mq += resX;
                 Mq += resY;
 
-                Mposit.convert(Mq.to_value());
-                M[r][c] = Mposit;
+                Mc.convert(Mq.to_value());
 
                 // Calculation of X[r][c]
-                Xq += quire_mul(M[r - 1][c], p[r][MX]);
-                Xq += quire_mul(X[r - 1][c], p[r][XX]);
+                Xq += quire_mul(Mu[c], p[r][MX]);
+                Xq += quire_mul(Xu[c], p[r][XX]);
 
-                Xposit.convert(Xq.to_value());
-                X[r][c] = Xposit;
+                Xc.convert(Xq.to_value());
 
                 // Calculation of Y[r][c]
-                Yq += quire_mul(M[r][c - 1], p[r][MY]);
-                Yq += quire_mul(Y[r][c - 1], p[r][YY]);
-                Yposit.convert(Yq.to_value());
-                Y[r][c] = Yposit;
+                Yq += quire_mul(Ml[c], p[r][MY]);
+                Yq += quire_mul(Yl[c], p[r][YY]);
+                Yc.convert(Yq.to_value());
 
-                debug_values.debugValue(M[r][c], "M[%d][%d]", r, c);
-                debug_values.debugValue(X[r][c], "X[%d][%d]", r, c);
-                debug_values.debugValue(Y[r][c], "Y[%d][%d]", r, c);
+                Md = Mu[c];
+                Xd = Xu[c];
+                Yd = Yu[c];
+
+                Mu[c] = Mc;
+                Xu[c] = Xc;
+                Yu[c] = Yc;
+
+                Ml[c+1] = Mc;
+                Yl[c+1] = Yc;
+
+                debug_values.debugValue(Mc, "M[%d][%d]", r, c);
+                debug_values.debugValue(Xc, "X[%d][%d]", r, c);
+                debug_values.debugValue(Yc, "Y[%d][%d]", r, c);
+
 
                 // Result accumulation
                 if(r == ROWS) {
@@ -192,9 +212,12 @@ public:
                     debug_values.debugValue(inter_posit, "result[%d]", c);
                 }
             }
+
+            Md = 0;
+            Xd = 0;
+            Yd = 0;
         }
 
-        // Convert back to decimal50
         return cpp_dec_float_50(result_quire.to_value());
     }
 };
