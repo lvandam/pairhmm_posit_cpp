@@ -22,13 +22,11 @@
 using namespace std;
 using boost::multiprecision::cpp_dec_float_50;
 
-const std::vector<int> initial_constant_powers = {100, 50, 20, 10, 5, 2, 1};
-
 int main(int argc, char *argv[]) {
     cout.precision(50);
     cout.flags(cout.fixed);
 
-    for(auto initial_constant_power: initial_constant_powers) {
+    for(int initial_constant_power = 5; initial_constant_power <= 100; initial_constant_power += 5) {
         InputReader reader {};
 
         std::vector<cpp_dec_float_50> results_decimal, results_float, results_posit;

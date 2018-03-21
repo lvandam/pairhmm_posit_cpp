@@ -1,11 +1,9 @@
-initial_constants = [100, 50, 20, 10, 5, 2, 1];
-
-file_prefix = '5cba05c_nofused_float_posit32-2/';
+file_prefix = '8a7ff33_fused_element_float_posit32-2/';
 
 results_decimal_accuracy = zeros(1,3);
 
 i = 1;
-for initial_constant = initial_constants
+for initial_constant = 5:5:100
     data = readtable([file_prefix num2str(initial_constant) '.txt']);
     
     da_float = data{strcmp(data{:,1}, 'result[32]'), 9};
@@ -21,7 +19,7 @@ set(h, 'units', 'pixels', 'position', [200, 200, 600, 200]);
 hold on
 scatter(results_decimal_accuracy(:,1), results_decimal_accuracy(:,2), 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'b', 'MarkerFaceAlpha', .7) % float
 scatter(results_decimal_accuracy(:,1), results_decimal_accuracy(:,3), 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'r', 'MarkerFaceAlpha', .7) % posit
-xticks(sort(initial_constants));
+xticks(5:5:100);
 legend({'float', 'posit<32,2>'});
 grid on; grid minor;
 set(gca, 'TickLabelInterpreter', 'none');
@@ -42,4 +40,4 @@ ax.Position = [left bottom ax_width ax_height];
 
 pos = get(h, 'Position');
 set(h, 'PaperPositionMode', 'Auto', 'PaperUnits', 'points ', 'PaperSize', [pos(3), pos(4)])
-print(h, '32_data_nofused_initial_constants', '-dpdf', '-r0')
+print(h, '32_data_fused_8a7ff33_initial_constants', '-dpdf', '-r0')
