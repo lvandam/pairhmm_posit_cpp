@@ -1,3 +1,4 @@
+clear; clf;
 initial_constants = [100, 50, 20, 10, 5, 2, 1];
 
 [s, git_hash_string] = system('git rev-parse HEAD');
@@ -26,6 +27,18 @@ for initial_constant = initial_constants
     filter_text2 = ["NONE", "NONE", "NONE", "NONE", "X[27]", "NONE"];
     filter_text3 = ["NONE", "NONE", "NONE", "NONE", "Y[27]", "NONE"];
     decimal_accuracy = true;
+
+%     set_name = '32_data';
+%     pngname = set_name+"_"+git_hash_string+"-"+git_branch_name+"_const"+num2str(initial_constant);
+%     regions = [1 datalength]; % start and end indices of each region
+%     showlabels = [true]; % toggle X-axis variable names for each region
+%     wide = [true]; % horizontally wide plot for region
+%     legendstring = {'float', 'posit<32,2>'};
+%     filter_text1 = ["result"]; % filtered based on the first (name) column
+%     filter_text2 = ["NONE"];
+%     filter_text3 = ["NONE"];
+%     decimal_accuracy = true;
+
 
     % 1_data
 %     set_name = '1_data';
@@ -120,7 +133,9 @@ for initial_constant = initial_constants
             set(gca, 'xtick', [])
         end
         xtickangle(45);
-        title(titles(row));
+        if exist('titles', 'var')
+            title(titles(row));
+        end
         
         if decimal_accuracy
             ylabel('decimal accuracy');
@@ -129,11 +144,12 @@ for initial_constant = initial_constants
         end
     end
 
-    p = mtit(main_title, 'FontSize', 14, 'Color', 'r', 'XOff', 0, 'YOff', .025);
+    if exist('main_title', 'var')
+        p = mtit(main_title, 'FontSize', 14, 'Color', 'r', 'XOff', 0, 'YOff', .025);
+    end
     
     % Save as PNG
     print(pngname, '-dpng');
 end
 
 close;
-
