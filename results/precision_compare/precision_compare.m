@@ -1,5 +1,8 @@
 clear; clf;
 
+datapath = '/Users/ldam/pairhmm_posit/results/precision_compare/d195ce7_fused_float_posit32-2/';
+
+
 [s, git_hash_string] = system('git rev-parse HEAD');
 git_hash_string = git_hash_string(1:7);
 [s, git_branch_name] = system('git rev-parse --abbrev-ref HEAD');
@@ -8,14 +11,14 @@ git_branch_name = strtrim(git_branch_name);
 for initial_constant = 5:5:100
     clf; set(gcf, 'units', 'pixels', 'position', [200, 200, 1500, 1000])
     
-    data = readtable(['/Users/ldam/pairhmm_posit/results/precision_compare/5cba05c_nofused_float_posit32-2/' num2str(initial_constant) '.txt']);
+    data = readtable([datapath num2str(initial_constant) '.txt']);
 %     data = readtable(['/Users/ldam/pairhmm_posit/cmake-build-debug/' num2str(initial_constant) '.txt']);
     datalength = length(data{:,1});
 
     % Config (define different regions that should be plotted individually)
 
     % 32_data
-    set_name = '32_data_da_fused';
+    set_name = '32_data_da';
     main_title = ['Dataset = ' strrep(set_name, '_', '\_') ' - Initial constant = 2^{' num2str(initial_constant) '}' newline 'git commit ' git_hash_string ' / ' git_branch_name];
     pngname = set_name+"_"+git_hash_string+"-"+git_branch_name+"_const"+num2str(initial_constant);
     regions = [1 datalength; 1 datalength; 1 datalength; 1 datalength; 1 datalength; 1 datalength]; % start and end indices of each region
@@ -149,7 +152,7 @@ for initial_constant = 5:5:100
     end
     
     % Save as PNG
-    print(pngname, '-dpng');
+    print(strcat(datapath, pngname), '-dpng');
 end
 
 close;
