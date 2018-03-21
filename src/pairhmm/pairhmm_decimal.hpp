@@ -18,8 +18,6 @@ using namespace std;
 using namespace sw::unum;
 using boost::multiprecision::cpp_dec_float_50;
 
-void writeBenchmarkText(const char *format, ...);
-
 template<class T>
 class PairHMMDecimal {
 private:
@@ -109,8 +107,6 @@ public:
 
         for (r = 1; r <= ROWS; r++) {
             for (c = 1; c <= COLS; c++) {
-                writeBenchmarkText(">> [r,c] = %d,%d", r, c);
-
                 char _rs = testcase->read_base[r - 1];
                 debug_values.debugValue(_rs, "_rs");
 
@@ -129,8 +125,6 @@ public:
                     distm[r][c] = distm[r][c] / 3;
                 }
                 debug_values.debugValue(distm[r][c], "distm_after[%d][%d]", r, c);
-
-                writeBenchmarkText("");
             }
         }
 

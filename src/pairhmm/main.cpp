@@ -48,17 +48,17 @@ int main(int argc, char *argv[]) {
             result = pairhmm_dec50.compute_full_prob(&testcase);
             results_decimal.push_back(result);
             cout << "-- DECIMAL50 -- " << result << " -- log10 = " << log10(result) << endl;
-            pairhmm_dec50.debug_values.exportDebugValues("pairhmm_decimal50.txt");
+//            pairhmm_dec50.debug_values.exportDebugValues("pairhmm_decimal50.txt");
 
             result = pairhmm_float.compute_full_prob(&testcase);
             results_float.push_back(result);
             cout << "-- FLOAT -- = " << result << " -- log10 = " << log10(result) << endl;
-            pairhmm_float.debug_values.exportDebugValues("pairhmm_float.txt");
+//            pairhmm_float.debug_values.exportDebugValues("pairhmm_float.txt");
 
             result = pairhmm_posit.compute_full_prob(&testcase);
             results_posit.push_back(result);
             cout << "-- POSIT<32,2> -- = " << result << " -- log10 = " << log10(result) << endl;
-            pairhmm_posit.debug_values.exportDebugValues("pairhmm_posit.txt");
+//            pairhmm_posit.debug_values.exportDebugValues("pairhmm_posit.txt");
 
             // For benchmarking (print without labels)
             writeBenchmark(pairhmm_dec50, pairhmm_float, pairhmm_posit, std::to_string(initial_constant_power)+".txt", false, true);

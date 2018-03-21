@@ -21,11 +21,11 @@ for initial_constant = initial_constants
     titles = ["All intermediate values", "Phred scores", "M[1][c]", "Y[1][c]", "M[27], X[27], Y[27]", "Result Accumulation"]; % region labels
     showlabels = [false, true, true, true, true, true]; % toggle X-axis variable names for each region
     wide = [true, true, false, false, true, true]; % horizontally wide plot for region
-    
+    legendstring = {'float', 'posit<32,2>'};
     filter_text1 = ["",     "p",    "M[1]", "Y[1]", "M[27]", "result"]; % filtered based on the first (name) column
     filter_text2 = ["NONE", "NONE", "NONE", "NONE", "X[27]", "NONE"];
     filter_text3 = ["NONE", "NONE", "NONE", "NONE", "Y[27]", "NONE"];
-    decimal_accuracy = false;
+    decimal_accuracy = true;
 
     % 1_data
 %     set_name = '1_data';
@@ -35,6 +35,7 @@ for initial_constant = initial_constants
 %     titles = ["All intermediate values"]; % region labels
 %     showlabels = [true]; % toggle X-axis variable names for each region
 %     wide = [true]; % horizontally wide plot for region
+%     legendstring = {'float', 'posit<32,2>'};
 %     filter_text1 = [""]; % filtered based on the first (name) column
 %     filter_text2 = ["NONE"];
 %     filter_text3 = ["NONE"];
@@ -110,7 +111,7 @@ for initial_constant = initial_constants
 
         scatter(data_x_filtered, data_float_filtered, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'b', 'MarkerFaceAlpha', .7) % float
         scatter(data_x_filtered, data_posit_filtered, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'r', 'MarkerFaceAlpha', .7) % posit
-        legend({'float', 'posit<32,2>'});
+        legend(legendstring);
         grid on; grid minor;
         set(gca, 'TickLabelInterpreter', 'none');
         if showlabels(row)
@@ -131,7 +132,7 @@ for initial_constant = initial_constants
     p = mtit(main_title, 'FontSize', 14, 'Color', 'r', 'XOff', 0, 'YOff', .025);
     
     % Save as PNG
-    print('images\'+pngname, '-dpng');
+    print(pngname, '-dpng');
 end
 
 close;
