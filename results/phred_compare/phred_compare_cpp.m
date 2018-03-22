@@ -12,9 +12,9 @@ clf; h = figure;
 set(h, 'units', 'pixels', 'position', [200, 200, 600, 200]);
 
 hold on;
-scatter(Q, da_f, 'r');
-scatter(Q, da_p2, 'b');
-scatter(Q, da_p3, 'g');
+scatter(Q, da_f, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'r', 'MarkerFaceAlpha', .7)
+scatter(Q, da_p2, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'b', 'MarkerFaceAlpha', .7)
+% scatter(Q, da_p3, 30, 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'g', 'MarkerFaceAlpha', .7)
 xlabel('Phred Quality Score');
 ylabel('decimal accuracy');
 grid on; grid minor;

@@ -28,7 +28,7 @@ cpp_dec_float_50 decimal_accuracy(cpp_dec_float_50 exact, cpp_dec_float_50 compu
 }
 
 cpp_dec_float_50 score_to_probability(int Q) {
-    return boost::multiprecision::pow(static_cast<cpp_dec_float_50>(10), -Q / 10);
+    return boost::multiprecision::pow(static_cast<cpp_dec_float_50>(10), -static_cast<cpp_dec_float_50>(Q) / 10);
 }
 
 int main() {
